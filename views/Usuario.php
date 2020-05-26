@@ -25,24 +25,25 @@
 
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_REQUEST['action']) && $_REQUEST["action"]=="newUser") {
         if ($_POST['primerNombre']!='' && $_POST['apellido']!='' && $_POST['correo']!='' && $_POST['lugarOrigen']!='' && $_FILES['foto']!='' && $_POST['fechaNacimiento']!='' && $_POST['carrera']!='' && $_POST['contrasena']!='' && $_POST['matricula']!='') {
-            $uploaddir = realpath($_SERVER['DOCUMENT_ROOT'])."\\upload\\";
-            $uploadfile = $uploaddir . basename($_FILES['foto']['name']);
-            if (move_uploaded_file($_FILES['foto']['tmp_name'], $uploadfile)) {
-                $sql = "SELECT MAX(ID_User) as ID_User FROM Usuario";
-                $result = mysqli_query($conn, $sql);
-                if ($row = mysqli_fetch_assoc($result)) {
-                    $maxID = $row["ID_User"]+1;
-                }
-
-                $sql = "INSERT INTO usuario VALUES(".$maxID.",'".$_POST['primerNombre']."','".$_POST['apellido']."','".$_POST['correo']."','".$_POST['lugarOrigen']."','".$_FILES['foto']['tmp_name']."','".$_POST['fechaNacimiento']."','".$_POST['carrera']."',NOW()".",'".$_POST['contrasena']."','".$_POST['matricula']."');";
-
-                if (mysqli_query($conn, $sql)) {
-                    echo "<p style=\"color:green\">New record was created</p>";
+            $sql = "SELECT MAX(ID_User) as ID_User FROM Usuario";
+            $result = mysqli_query($conn, $sql);
+            if ($row = mysqli_fetch_assoc($result)) {
+                $maxID = $row["ID_User"]+1;
+            } else {
+                $maxID = 0;
+            }
+            $sql = "INSERT INTO usuario VALUES(".$maxID.",'".$_POST['primerNombre']."','".$_POST['apellido']."','".$_POST['correo']."','".$_POST['lugarOrigen']."','".$maxID.".".pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION)."','".$_POST['fechaNacimiento']."','".$_POST['carrera']."',NOW()".",'".$_POST['contrasena']."','".$_POST['matricula']."');";
+            if (mysqli_query($conn, $sql)) {
+                echo "<p style=\"color:green\">Se registró al usuario correctamente</p>";
+                $uploaddir = realpath($_SERVER['DOCUMENT_ROOT'])."\\upload\\";
+                $uploadfile = $uploaddir . $maxID . "." . pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
+                if (move_uploaded_file($_FILES['foto']['tmp_name'], $uploadfile)) {
+                    echo "<p style=\"color:green\">Se guardó la foto correctamente</p>";
                 } else {
-                    echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
+                    echo "<p style=\"color:red\">Error: No se pudo guardar la foto</p>";
                 }
             } else {
-                echo "<p style=\"color:red\">ERROR: Foto invalida</p>";
+                echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
             }
         } else {
             echo "<p style=\"color:red\">ERROR: You need to fill all fields</p>";
@@ -50,77 +51,76 @@
     }
 
     if (isset($_REQUEST['action']) && $_REQUEST["action"]=="deleteUser") {
-
-      if ($_REQUEST['memberNo']>0) {
-        /*
-        echo "memberNo= ".$_REQUEST['memberNo']."<br>";
-        */
-
-        $sql = "DELETE FROM Members WHERE memberNo=".$_REQUEST['memberNo'];
-
-        if (mysqli_query($conn, $sql)) {
-            echo "<p style=\"color:green\">Record was deleted</p>";
+        if ($_REQUEST['id_user']>0) {
+            /*
+            echo "id_user= ".$_REQUEST['id_user']."<br>";
+            */
+            $sql = "SELECT foto FROM Usuario WHERE ID_User = " . $_REQUEST['id_user'] . ";";
+            $result = mysqli_query($conn, $sql);
+            if ($row = mysqli_fetch_assoc($result)) {
+                $filename = $row['foto'];
+                $sql = "DELETE FROM Usuario WHERE ID_User=".$_REQUEST['id_user'];
+                if (mysqli_query($conn, $sql)) {
+                    echo "<p style=\"color:green\">Se eliminó al usuario correctamente</p>";
+                    if (file_exists(realpath($_SERVER['DOCUMENT_ROOT'])."/upload/".$filename)) {
+                        unlink(realpath($_SERVER['DOCUMENT_ROOT'])."\\upload\\".$filename);
+                        echo "<p style=\"color:green\">Se eliminó la foto del usuario correctamente</p>";
+                    } else {
+                        echo "<p style=\"color:red\">Error: No se encontró la foto del usuario para borrarla</p>";
+                    }
+                } else {
+                    echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
+                }
+            }
         } else {
-            echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
+            echo "<p style=\"color:red\">ERROR: Waiting for numeric id_user value</p>";
         }
-
-      } else {
-        echo "<p style=\"color:red\">ERROR: Waiting for numeric memberNo value</p>";
-      }
     }
 
     if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyView") {
-
-      if ($_REQUEST['memberNo']>0) {
-        /*
-        echo "memberNo= ".$_REQUEST['memberNo']."<br>";
-        */
-
-        $sql = "SELECT * FROM Members WHERE memberNo=".$_REQUEST['memberNo'];
-        $result = mysqli_query($conn, $sql);
-        if($row = mysqli_fetch_assoc($result)){
-          $memberNo=$row["memberNo"];
-          $fName=$row["fName"];
-          $lName=$row["lName"];
-          $sex=$row["sex"];
-          $DOB=$row["DOB"];
-          $address=$row["address"];
-          $dateJoined=$row["dateJoined"];
+        if ($_REQUEST['memberNo']>0) {
+            $sql = "SELECT * FROM Members WHERE memberNo=".$_REQUEST['memberNo'];
+            $result = mysqli_query($conn, $sql);
+            if($row = mysqli_fetch_assoc($result)){
+                $memberNo=$row["memberNo"];
+                $fName=$row["fName"];
+                $lName=$row["lName"];
+                $sex=$row["sex"];
+                $DOB=$row["DOB"];
+                $address=$row["address"];
+                $dateJoined=$row["dateJoined"];
+            }
+        } else {
+                echo "<p style=\"color:red\">ERROR: Waiting for numeric memberNo value</p>";
         }
-
-      } else {
-        echo "<p style=\"color:red\">ERROR: Waiting for numeric memberNo value</p>";
-      }
     }
 
     if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyUser") {
+        if ($_POST['memberNo']>0 && $_POST['fname']!='' && $_POST['lname']!='' && $_POST['sex']!='' && $_POST['dob']!='' && $_POST['address']!='') {
+            /*
+            echo "memberNo= ".$_REQUEST['memberNo']."<br>";
+            */
 
-      if ($_POST['memberNo']>0 && $_POST['fname']!='' && $_POST['lname']!='' && $_POST['sex']!='' && $_POST['dob']!='' && $_POST['address']!='') {
-        /*
-        echo "memberNo= ".$_REQUEST['memberNo']."<br>";
-        */
+            $sql = "UPDATE Members
+                    SET fName='".$_POST['fname']."'
+                        ,lName='".$_POST['lname']."'
+                        ,sex='".$_POST['sex']."'
+                        ,DOB='".$_POST['dob']."'
+                        ,address='".$_POST['address']."'
+                    WHERE memberNo=".$_POST['memberNo'];
 
-        $sql = "UPDATE Members
-                SET fName='".$_POST['fname']."'
-                    ,lName='".$_POST['lname']."'
-                    ,sex='".$_POST['sex']."'
-                    ,DOB='".$_POST['dob']."'
-                    ,address='".$_POST['address']."'
-                WHERE memberNo=".$_POST['memberNo'];
-
-        if (mysqli_query($conn, $sql)) {
-            echo "<p style=\"color:green\">Record was modified</p>";
+            if (mysqli_query($conn, $sql)) {
+                echo "<p style=\"color:green\">Record was modified</p>";
+            } else {
+                echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
+            }
         } else {
-            echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
+            echo "<p style=\"color:red\">ERROR: You need to fill all fields</p>";
         }
-
-      } else {
-        echo "<p style=\"color:red\">ERROR: You need to fill all fields</p>";
-      }
     }
-
 ?>
 
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -221,6 +221,6 @@
 
         mysqli_close($conn);
     ?>
-    <a href="index.html">Regresar</a>
+    <p><a href="index.html">Regresar</a></p>
   </body>
 </html>
