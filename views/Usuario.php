@@ -100,26 +100,28 @@
     }
 
     if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyUser") {
-        if ($_POST['memberNo']>0 && $_POST['fname']!='' && $_POST['lname']!='' && $_POST['sex']!='' && $_POST['dob']!='' && $_POST['address']!='') {
-            /*
-            echo "memberNo= ".$_REQUEST['memberNo']."<br>";
-            */
+        if ($_POST['id_user']>0 && $_POST['primerNombre']!='' && $_POST['apellido']!='' && $_POST['correo']!='' && $_POST['lugarOrigen']!='' && $_POST['fechaNacimiento']!='' && $_POST['carrera']!='' && $_POST['contrasena']!='' && $_POST['matricula']!='') {
 
-            $sql = "UPDATE Members
-                    SET fName='".$_POST['fname']."'
-                        ,lName='".$_POST['lname']."'
-                        ,sex='".$_POST['sex']."'
-                        ,DOB='".$_POST['dob']."'
-                        ,address='".$_POST['address']."'
-                    WHERE memberNo=".$_POST['memberNo'];
+            $sql = "UPDATE Usuario
+                    SET ID_User='".$_POST['id_user']."',
+                        PrimerNombre='".$_POST['primerNombre']."',
+                        Apellido='".$_POST['apellido']."',
+                        Correo='".$_POST['correo']."',
+                        LugarOrigen='".$_POST['lugarOrigen']."',".
+                        (isset($_REQUEST['foto']) && $_POST['foto'] != '' ? "',Foto='" . $maxID.pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION) . "'," : "")."
+                        FechaNacimiento='".$_POST['fechaNacimiento']."',
+                        Carrera='".$_POST['carrera']."',
+                        Contrasena='".$_POST['contrasena']."',
+                        Matricula='".$_POST['matricula']."' ".
+                    "WHERE ID_User=".$_POST['id_user'].";";
 
             if (mysqli_query($conn, $sql)) {
-                echo "<p style=\"color:green\">Record was modified</p>";
+                echo "<p style=\"color:green\">El usuario fue modificado</p>";
             } else {
                 echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
             }
         } else {
-            echo "<p style=\"color:red\">ERROR: You need to fill all fields</p>";
+            echo "<p style=\"color:red\">ERROR: You need to fill all fields except Foto</p>";
         }
     }
 ?>
@@ -153,6 +155,11 @@
         </p>
         <p>
             <label>Foto</label>
+            <?php 
+            if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyView") {
+                echo "<span>(Si no desea modificar la foto, deje este espacio en blanco)</span>";
+            }
+            ?>
             <input type="file" name="foto" value="<?php echo $foto;?>">
         </p>
         <p>
