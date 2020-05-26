@@ -78,17 +78,21 @@
     }
 
     if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyView") {
-        if ($_REQUEST['memberNo']>0) {
-            $sql = "SELECT * FROM Members WHERE memberNo=".$_REQUEST['memberNo'];
+        if ($_REQUEST['id_user']>0) {
+            $sql = "SELECT * FROM Usuario WHERE id_user=".$_REQUEST['id_user'];
             $result = mysqli_query($conn, $sql);
             if($row = mysqli_fetch_assoc($result)){
-                $memberNo=$row["memberNo"];
-                $fName=$row["fName"];
-                $lName=$row["lName"];
-                $sex=$row["sex"];
-                $DOB=$row["DOB"];
-                $address=$row["address"];
-                $dateJoined=$row["dateJoined"];
+                $id_user = $row["ID_User"];
+                $primerNombre = $row["PrimerNombre"];
+                $apellido = $row["Apellido"];
+                $correo = $row["Correo"];
+                $lugarOrigen = $row["LugarOrigen"];
+                $foto = "";
+                $fechaNacimiento = $row["FechaNacimiento"];
+                $carrera = $row["Carrera"];
+                $ultimaConexion = $row["UltimaConexion"];
+                $contrasena = $row["Contrasena"];
+                $matricula = $row["Matricula"];
             }
         } else {
                 echo "<p style=\"color:red\">ERROR: Waiting for numeric memberNo value</p>";
@@ -169,9 +173,9 @@
         </p>
 
         <?php if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyView") { ?>
-            <input type="text" name="action" value="modifyMember" style="display:none;">
-            <input type="text" name="memberNo" value="<?php echo $memberNo;?>" style="display:none;">
-            <input type="submit" value="Modify Member">
+            <input type="text" name="action" value="modifyUser" style="display:none;">
+            <input type="text" name="id_user" value="<?php echo $id_user;?>" style="display:none;">
+            <input type="submit" value="Modificar Usuario">
         <?php } else { ?>
             <input type="hidden" name="action" value="newUser" style="display:none;">
             <input type="submit" value="Agregar Usuario">
