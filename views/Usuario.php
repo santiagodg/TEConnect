@@ -193,7 +193,7 @@
             echo "<th>Carrera</th>";
             echo "<th>Ultima Conexión</th>";
             echo "<th>Contraseña</th>";
-            echo "<th>Matricula</th>";
+            echo "<th>Matrícula</th>";
             echo "<th>&nbsp</th>";
             echo "<th>&nbsp</th>";
             echo "</tr>";
