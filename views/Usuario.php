@@ -130,7 +130,9 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/views/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="/views/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="/views/css/bootstrap.min.css">
+    <script type="text/javascript" src="/views/js/bootstrap.bundle.min.js"></script>
     <title>TEConnect | Usuario</title>
 </head>
 <body>
@@ -232,6 +234,6 @@
 
         mysqli_close($conn);
     ?>
-    <p><a href="index.html">Regresar</a></p>
+    <p><a href="/index.html">Regresar</a></p>
   </body>
 </html>
