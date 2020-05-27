@@ -23,6 +23,8 @@
         die("Connection failed: " . mysqli_connect_error());
     }
 
+    $os = PHP_OS;
+
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_REQUEST['action']) && $_REQUEST["action"]=="newUser") {
         if ($_POST['primerNombre']!='' && $_POST['apellido']!='' && $_POST['correo']!='' && $_POST['lugarOrigen']!='' && $_FILES['foto']!='' && $_POST['fechaNacimiento']!='' && $_POST['carrera']!='' && $_POST['contrasena']!='' && $_POST['matricula']!='') {
             $sql = "SELECT MAX(ID_User) as ID_User FROM Usuario";
@@ -32,10 +34,14 @@
             } else {
                 $maxID = 0;
             }
-            $sql = "INSERT INTO usuario VALUES(".$maxID.",'".$_POST['primerNombre']."','".$_POST['apellido']."','".$_POST['correo']."','".$_POST['lugarOrigen']."','".$maxID.".".pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION)."','".$_POST['fechaNacimiento']."','".$_POST['carrera']."',NOW()".",'".$_POST['contrasena']."','".$_POST['matricula']."');";
+            $sql = "INSERT INTO Usuario VALUES(".$maxID.",'".$_POST['primerNombre']."','".$_POST['apellido']."','".$_POST['correo']."','".$_POST['lugarOrigen']."','".$maxID.".".pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION)."','".$_POST['fechaNacimiento']."','".$_POST['carrera']."',NOW()".",'".$_POST['contrasena']."','".$_POST['matricula']."');";
             if (mysqli_query($conn, $sql)) {
                 echo "<p style=\"color:green\">Se registró al usuario correctamente</p>";
-                $uploaddir = realpath($_SERVER['DOCUMENT_ROOT'])."\\upload\\";
+                if ($os == "Linux") {
+                    $uploaddir = realpath($_SERVER['DOCUMENT_ROOT'])."/upload/";
+                } else {
+                    $uploaddir = realpath($_SERVER['DOCUMENT_ROOT'])."\\upload\\";
+                }
                 $uploadfile = $uploaddir . $maxID . "." . pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
                 if (move_uploaded_file($_FILES['foto']['tmp_name'], $uploadfile)) {
                     echo "<p style=\"color:green\">Se guardó la foto correctamente</p>";
@@ -63,7 +69,11 @@
                 if (mysqli_query($conn, $sql)) {
                     echo "<p style=\"color:green\">Se eliminó al usuario correctamente</p>";
                     if (file_exists(realpath($_SERVER['DOCUMENT_ROOT'])."/upload/".$filename)) {
-                        unlink(realpath($_SERVER['DOCUMENT_ROOT'])."\\upload\\".$filename);
+                        if ($os == "Linux") {
+                            unlink(realpath($_SERVER['DOCUMENT_ROOT'])."/upload/".$filename);
+                        } else {
+                            unlink(realpath($_SERVER['DOCUMENT_ROOT'])."\\upload\\".$filename);
+                        }
                         echo "<p style=\"color:green\">Se eliminó la foto del usuario correctamente</p>";
                     } else {
                         echo "<p style=\"color:red\">Error: No se encontró la foto del usuario para borrarla</p>";
