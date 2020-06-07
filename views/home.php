@@ -38,7 +38,7 @@
 
     <br>
     <br><a href="/views/Perfil.php">Perfil</a>
-    <br><a href="/views/DescubrirPersonas.php">Descubrir personas</a>
+    <br><a href="/views/EscogerAmbito.php">Descubrir personas</a>
     <br><a href="/views/Conversaciones.php">Conversaciones</a>
     <br>
     <br><a href="/views/Logout.php">Cerrar sesion</a>
