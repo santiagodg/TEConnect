@@ -16,6 +16,8 @@
     $contrasena = "";
     $matricula = "";
 
+    date_default_timezone_set('America/Monterrey');
+
     // Create connection
     $conn = mysqli_connect($servername, $username, $password, $database);
     // Check connection
@@ -100,7 +102,6 @@
                 $foto = "";
                 $fechaNacimiento = $row["FechaNacimiento"];
                 $carrera = $row["Carrera"];
-                $ultimaConexion = $row["UltimaConexion"];
                 $contrasena = $row["Contrasena"];
                 $matricula = $row["Matricula"];
             }
@@ -113,8 +114,7 @@
         if ($_POST['id_user']>0 && $_POST['primerNombre']!='' && $_POST['apellido']!='' && $_POST['correo']!='' && $_POST['lugarOrigen']!='' && $_POST['fechaNacimiento']!='' && $_POST['carrera']!='' && $_POST['contrasena']!='' && $_POST['matricula']!='') {
 
             $sql = "UPDATE Usuario
-                    SET ID_User='".$_POST['id_user']."',
-                        PrimerNombre='".$_POST['primerNombre']."',
+                    SET PrimerNombre='".$_POST['primerNombre']."',
                         Apellido='".$_POST['apellido']."',
                         Correo='".$_POST['correo']."',
                         LugarOrigen='".$_POST['lugarOrigen']."',".

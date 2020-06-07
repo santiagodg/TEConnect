@@ -6,6 +6,8 @@
 
     $id_ambito = "";
     $nombre = "";
+
+    date_default_timezone_set('America/Monterrey');
    
     // Create connection
     $conn = mysqli_connect($servername, $username, $password, $database);
@@ -64,8 +66,7 @@
         if ($_POST['id_ambito']>0 && $_POST['nombre']!='') {
 
             $sql = "UPDATE Ambito
-                    SET ID_Ambito='".$_POST['id_ambito']."',
-                        Nombre='".$_POST['nombre']."' ".
+                    SET Nombre='".$_POST['nombre']."' ".
                     "WHERE ID_Ambito=".$_POST['id_ambito'].";";
 
             if (mysqli_query($conn, $sql)) {

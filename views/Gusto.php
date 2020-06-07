@@ -7,7 +7,9 @@
     $gusto = "";
     $id_user = "";
     $id_ambito = "";
-   
+
+    date_default_timezone_set('America/Monterrey');
+
     // Create connection
     $conn = mysqli_connect($servername, $username, $password, $database);
     // Check connection
@@ -88,24 +90,29 @@
     <h1>TEConnect</h1>
     <h2>Gusto</h2>
     <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>" enctype="multipart/form-data">
-        <p>
-            <label>Usuario</label>
-            <input type="text" name="id_user" value="<?php echo $id_user;?>">
-        </p>
-        <p>
-            <label>Ambito</label>
-            <input type="text" name="id_ambito" value="<?php echo $id_ambito;?>">
-        </p>
-        <p>
-            <label>Descripcion del gusto</label>
-            <input type="text" name="gusto" value="<?php echo $gusto;?>">
-        </p>
 
         <?php if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyView") { ?>
+            <p>
+                <label>Descripcion del gusto</label>
+                <input type="text" name="gusto" value="<?php echo $gusto;?>">
+            </p>
             <input type="text" name="action" value="modifyGusto" style="display:none;">
             <input type="text" name="id_ambito" value="<?php echo $id_ambito;?>" style="display:none;">
+            <input type="text" name="id_user" value="<?php echo $id_user;?>" style="display:none;">
             <input type="submit" value="Modificar DetalleAmbito">
         <?php } else { ?>
+            <p>
+                <label>Usuario</label>
+                <input type="text" name="id_user" value="<?php echo $id_user;?>">
+            </p>
+            <p>
+                <label>Ambito</label>
+                <input type="text" name="id_ambito" value="<?php echo $id_ambito;?>">
+            </p>
+            <p>
+                <label>Descripcion del gusto</label>
+                <input type="text" name="gusto" value="<?php echo $gusto;?>">
+            </p>
             <input type="hidden" name="action" value="newGusto" style="display:none;">
             <input type="submit" value="Agregar DetalleAmbito">
         <?php } ?>

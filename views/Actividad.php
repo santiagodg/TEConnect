@@ -7,6 +7,8 @@
     $actividad = "";
     $id_user = "";
     $id_ambito = "";
+
+    date_default_timezone_set('America/Monterrey');
    
     // Create connection
     $conn = mysqli_connect($servername, $username, $password, $database);
@@ -59,9 +61,7 @@
         if ($_POST['id_ambito']>0 && $_POST['id_user']>0) {
 
             $sql = "UPDATE DetalleAmbito_Actividad
-                    SET Actividad='".$_POST['actividad']."',
-                        ID_User='".$_POST['id_user']."',
-                        ID_Ambito='".$_POST['id_ambito']."' ".
+                    SET Actividad='".$_POST['actividad']."' ".
                     "WHERE ID_Ambito=".$_POST['id_ambito']." AND ID_User=".$_POST['id_user'].";";
 
             if (mysqli_query($conn, $sql)) {
@@ -88,24 +88,30 @@
     <h1>TEConnect</h1>
     <h2>Actividad</h2>
     <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>" enctype="multipart/form-data">
-        <p>
-            <label>Usuario</label>
-            <input type="text" name="id_user" value="<?php echo $id_user;?>">
-        </p>
-        <p>
-            <label>Ambito</label>
-            <input type="text" name="id_ambito" value="<?php echo $id_ambito;?>">
-        </p>
-        <p>
-            <label>Descripcion del actividad</label>
-            <input type="text" name="actividad" value="<?php echo $actividad;?>">
-        </p>
+        
 
         <?php if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyView") { ?>
+            <p>
+                <label>Descripcion del actividad</label>
+                <input type="text" name="actividad" value="<?php echo $actividad;?>">
+            </p>
             <input type="text" name="action" value="modifyActividad" style="display:none;">
             <input type="text" name="id_ambito" value="<?php echo $id_ambito;?>" style="display:none;">
+            <input type="text" name="id_user" value="<?php echo $id_user;?>" style="display:none;">
             <input type="submit" value="Modificar DetalleAmbito">
         <?php } else { ?>
+            <p>
+                <label>Usuario</label>
+                <input type="text" name="id_user" value="<?php echo $id_user;?>">
+            </p>
+            <p>
+                <label>Ambito</label>
+                <input type="text" name="id_ambito" value="<?php echo $id_ambito;?>">
+            </p>
+            <p>
+                <label>Descripcion del actividad</label>
+                <input type="text" name="actividad" value="<?php echo $actividad;?>">
+            </p>
             <input type="hidden" name="action" value="newActividad" style="display:none;">
             <input type="submit" value="Agregar DetalleAmbito">
         <?php } ?>
