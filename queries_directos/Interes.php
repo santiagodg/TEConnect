@@ -108,6 +108,10 @@
                 <label>Ambito</label>
                 <input type="text" name="id_ambito" value="<?php echo $id_ambito;?>">
             </p>
+            <p>
+                <label>Descripcion del interes</label>
+                <input type="text" name="interes" value="<?php echo $interes;?>">
+            </p>
             <input type="hidden" name="action" value="newInteres" style="display:none;">
             <input type="submit" value="Agregar DetalleAmbito">
         <?php } ?>
