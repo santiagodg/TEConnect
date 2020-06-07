@@ -43,15 +43,55 @@
                 $matricula = $row["Matricula"];
             }
 
+    function deleteProfilePicture($id_user)
+    {
+        $servername = "127.0.0.1";
+        $username = "root";
+        $password = "";
+        $database = "TEConnect";
+        $os = PHP_OS;
+        $conn = mysqli_connect($servername, $username, $password, $database);
+        if (!$conn) {
+            die("Connection failed: " . mysqli_connect_error());
+        }
+        $sql = "SELECT foto FROM Usuario WHERE id_user = " . $id_user;
+        $result = mysqli_query($conn, $sql);
+        if ($row = mysqli_fetch_assoc($result))
+        {
+            $filename = $row['foto'];
+            if (file_exists(realpath($_SERVER['DOCUMENT_ROOT'])."/upload/".$filename))
+            {
+                if ($os == "Linux") {
+                    unlink(realpath($_SERVER['DOCUMENT_ROOT'])."/upload/".$filename);
+                } else {
+                    unlink(realpath($_SERVER['DOCUMENT_ROOT'])."\\upload\\".$filename);
+                }
+            }
+            else
+            {
+                echo "<p style=\"color:red\">No se encontró la foto para borrar</p>";
+            }
+        }
+        else
+        {
+            echo "<p style=\"color:red\">No se encontró registro de usuario para borrar foto.</p>";
+        }
+        mysqli_close($conn);
+    }
+
     if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyUser") {
         if ($_POST['id_user']>0 && $_POST['primerNombre']!='' && $_POST['apellido']!='' && $_POST['correo']!='' && $_POST['lugarOrigen']!='' && $_POST['fechaNacimiento']!='' && $_POST['carrera']!='' && $_POST['contrasena']!='' && $_POST['matricula']!='') {
+            if (isset($_FILES['foto']) && $_FILES['foto']['error'] != 4)
+            {
+                deleteProfilePicture($_SESSION['id']);
+            }
 
             $sql = "UPDATE Usuario
                     SET PrimerNombre='".$_POST['primerNombre']."',
                         Apellido='".$_POST['apellido']."',
                         Correo='".$_POST['correo']."',
                         LugarOrigen='".$_POST['lugarOrigen']."',".
-                        (isset($_REQUEST['foto']) && $_POST['foto'] != '' ? "',Foto='" . $maxID.pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION) . "'," : "")."
+                        (isset($_FILES['foto']) && $_FILES['foto']['error'] != 4 ? " Foto='" . $_POST['id_user'] . "." . pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION) . "'," : "")."
                         FechaNacimiento='".$_POST['fechaNacimiento']."',
                         Carrera='".$_POST['carrera']."',
                         Contrasena='".$_POST['contrasena']."',
@@ -60,6 +100,21 @@
 
             if (mysqli_query($conn, $sql)) {
                 echo "<p style=\"color:green\">El usuario fue modificado</p>";
+                if ( isset($_FILES['foto']) && $_FILES['foto']['error'] != 4 ) {
+                    if ($os == "Linux") {
+                        $uploaddir = realpath($_SERVER['DOCUMENT_ROOT'])."/upload/";
+                    } else {
+                        $uploaddir = realpath($_SERVER['DOCUMENT_ROOT'])."\\upload\\";
+                    }
+                    $uploadfile = $uploaddir . $_POST['id_user'] . "." . pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
+                    if (move_uploaded_file($_FILES['foto']['tmp_name'], $uploadfile)) {
+                        echo "<p style=\"color:green\">Se guardó la foto correctamente</p>";
+                    } else {
+                        echo "<p style=\"color:red\">Error: No se pudo guardar la foto</p>";
+                    }
+                } else {
+                    echo "<p style=\"color:blue\">No se guardó ninguna foto nueva</p>";
+                }
                 header("location: /views/Perfil.php");
             } else {
                 echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
