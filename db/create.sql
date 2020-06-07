@@ -9,7 +9,7 @@ CREATE TABLE Usuario
   Apellido VARCHAR(50) NOT NULL,
   Correo VARCHAR(50),
   LugarOrigen VARCHAR(50),
-  Foto MEDIUMBLOB,
+  Foto VARCHAR(50),
   FechaNacimiento DATETIME,
   Carrera CHAR(5),
   UltimaConexion DATETIME,
