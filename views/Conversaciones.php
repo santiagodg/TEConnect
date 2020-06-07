@@ -10,7 +10,7 @@
 
     <link rel="stylesheet" href="/views/css/styles.css">
 
-    <title>TEConnect | Descubrir Personas</title>
+    <title>TEConnect | Conversaciones</title>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
