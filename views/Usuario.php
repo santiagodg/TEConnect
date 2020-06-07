@@ -244,6 +244,6 @@
 
         mysqli_close($conn);
     ?>
-    <p><a href="/index.html">Regresar</a></p>
+    <p><a href="/views/home.html">Regresar</a></p>
   </body>
 </html>

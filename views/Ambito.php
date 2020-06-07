@@ -14,7 +14,7 @@
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_REQUEST['action']) && $_REQUEST["action"]=="newUser") {
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_REQUEST['action']) && $_REQUEST["action"]=="newAmbito") {
         if ($_POST['nombre']!='') {
             $sql = "SELECT MAX(ID_Ambito) as ID_Ambito FROM Ambito";
             $result = mysqli_query($conn, $sql);
@@ -34,7 +34,7 @@
         }
     }
 
-    if (isset($_REQUEST['action']) && $_REQUEST["action"]=="deleteUser") {
+    if (isset($_REQUEST['action']) && $_REQUEST["action"]=="deleteAmbito") {
         if ($_REQUEST['id_ambito']>0) {
             $sql = "DELETE FROM Ambito WHERE ID_Ambito=".$_REQUEST['id_ambito'];
             if (mysqli_query($conn, $sql)) {
@@ -60,7 +60,7 @@
         }
     }
 
-    if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyUser") {
+    if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyAmbito") {
         if ($_POST['id_ambito']>0 && $_POST['nombre']!='') {
 
             $sql = "UPDATE Ambito
@@ -98,11 +98,11 @@
         </p>
 
         <?php if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyView") { ?>
-            <input type="text" name="action" value="modifyUser" style="display:none;">
+            <input type="text" name="action" value="modifyAmbito" style="display:none;">
             <input type="text" name="id_ambito" value="<?php echo $id_ambito;?>" style="display:none;">
             <input type="submit" value="Modificar Ambito">
         <?php } else { ?>
-            <input type="hidden" name="action" value="newUser" style="display:none;">
+            <input type="hidden" name="action" value="newAmbito" style="display:none;">
             <input type="submit" value="Agregar Ambito">
         <?php } ?>
     </form><br>
@@ -126,7 +126,7 @@
                 echo "<td>".$row["ID_Ambito"]."</td>";
                 echo "<td>".$row["Nombre"]."</td>";
                 echo "<td><a href=\"".$_SERVER['PHP_SELF']."?action=modifyView&id_ambito=".$row["ID_Ambito"]."\">Modify</a></td>";
-                echo "<td><a href=\"".$_SERVER['PHP_SELF']."?action=deleteUser&id_ambito=".$row["ID_Ambito"]."\">Delete</a></td>";
+                echo "<td><a href=\"".$_SERVER['PHP_SELF']."?action=deleteAmbito&id_ambito=".$row["ID_Ambito"]."\">Delete</a></td>";
                 echo "</tr>";
             }
         }
@@ -134,6 +134,6 @@
 
         mysqli_close($conn);
     ?>
-    <p><a href="/index.html">Regresar</a></p>
+    <p><a href="/views/home.html">Regresar</a></p>
   </body>
 </html>

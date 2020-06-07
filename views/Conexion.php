@@ -16,9 +16,9 @@
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_REQUEST['action']) && $_REQUEST["action"]=="newUser") {
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_REQUEST['action']) && $_REQUEST["action"]=="newConexion") {
         if ($_POST['id_user1']!='' && $_POST['id_user2']!='' && $_POST['id_ambito']!='') {
-            $fechaCreada = date("d-m-Y");
+            $fechaCreada = date("Ymd");
             $sql = "INSERT INTO Conexion VALUES(".$fechaCreada.",'".$_POST['id_user1']."','".$_POST['id_user2']."','".$_POST['id_ambito']."');";
             if (mysqli_query($conn, $sql)) {
                 echo "<p style=\"color:green\">Se registró la conexion correctamente</p>";
@@ -30,8 +30,8 @@
         }
     }
 
-    if (isset($_REQUEST['action']) && $_REQUEST["action"]=="deleteUser") {
-        $sql = "DELETE FROM Conexion WHERE FechaCreada=".$_REQUEST['fechaCreada'];
+    if (isset($_REQUEST['action']) && $_REQUEST["action"]=="deleteConexion") {
+        $sql = "DELETE FROM Conexion WHERE ID_User1=".$_REQUEST['id_user1']." AND ID_User2=".$_REQUEST['id_user2'];
         if (mysqli_query($conn, $sql)) {
             echo "<p style=\"color:green\">Se eliminó la conexion correctamente</p>";
         } else {
@@ -40,7 +40,8 @@
     }
 
     if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyView") {
-        $sql = "SELECT * FROM Conexion WHERE FechaCreada=".$_REQUEST['fechaCreada'];
+        $sql = "SELECT * FROM Conexion WHERE ID_User1=".$_REQUEST['id_user1']." AND ID_User2=".$_REQUEST['id_user2'];
+        //
         $result = mysqli_query($conn, $sql);
         if($row = mysqli_fetch_assoc($result)){
             $fechaCreada = $row["FechaCreada"];
@@ -50,7 +51,7 @@
         }
     }
 
-    if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyUser") {
+    if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyConexion") {
             $sql = "UPDATE Conexion
                     SET ID_Ambito='".$_POST['id_ambito']."',
                         ID_User1='".$_POST['id_user1']."',
@@ -79,6 +80,10 @@
     <h2>Conexion</h2>
     <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>" enctype="multipart/form-data">
         <p>
+            <label>FechaCreada</label>
+            <input type="date" name="fechaCreada" value="<?php echo $fechaCreada;?>">
+        </p>
+        <p>
             <label>Usuario 1</label>
             <input type="text" name="id_user1" value="<?php echo $id_user1;?>">
         </p>
@@ -92,11 +97,11 @@
         </p>
 
         <?php if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyView") { ?>
-            <input type="text" name="action" value="modifyUser" style="display:none;">
+            <input type="text" name="action" value="modifyConexion" style="display:none;">
             <input type="text" name="id_ambito" value="<?php echo $id_ambito;?>" style="display:none;">
             <input type="submit" value="Modificar Conexion">
         <?php } else { ?>
-            <input type="hidden" name="action" value="newUser" style="display:none;">
+            <input type="hidden" name="action" value="newConexion" style="display:none;">
             <input type="submit" value="Agregar Conexion">
         <?php } ?>
     </form><br>
@@ -123,8 +128,8 @@
                 echo "<td>".$row["ID_User1"]."</td>";
                 echo "<td>".$row["ID_User2"]."</td>";
                 echo "<td>".$row["ID_Ambito"]."</td>";
-                echo "<td><a href=\"".$_SERVER['PHP_SELF']."?action=modifyView&fechaCreada=".$row["FechaCreada"]."\">Modify</a></td>";
-                echo "<td><a href=\"".$_SERVER['PHP_SELF']."?action=deleteUser&fechaCreada=".$row["FechaCreada"]."\">Delete</a></td>";
+                echo "<td><a href=\"".$_SERVER['PHP_SELF']."?action=modifyView&id_user1=".$row["ID_User1"]."&id_user2=".$row["ID_User2"]."\">Modify</a></td>";
+                echo "<td><a href=\"".$_SERVER['PHP_SELF']."?action=deleteConexion&id_user1=".$row["ID_User1"]."&id_user2=".$row["ID_User2"]."\">Delete</a></td>";
                 echo "</tr>";
             }
         }
@@ -132,6 +137,6 @@
 
         mysqli_close($conn);
     ?>
-    <p><a href="/index.html">Regresar</a></p>
+    <p><a href="/views/home.html">Regresar</a></p>
   </body>
 </html>
