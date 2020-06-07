@@ -23,7 +23,7 @@
             <a class="nav-link" href="/views/home.php">Home</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="/views/DescubrirPersonas.php">Descubrir Personas<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/views/EscogerAmbito.php">Descubrir Personas<span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/views/Conversaciones.php">Conversaciones</a>
