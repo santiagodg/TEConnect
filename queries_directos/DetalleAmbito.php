@@ -97,7 +97,7 @@
 
             <input type="text" name="action" value="modifyDetalle" style="display:none;">
             <input type="text" name="id_ambito" value="<?php echo $id_ambito;?>" style="display:none;">
-            <input type="text" name="id_user" value="<?php echo $id_user;?>" style="display:none;">
+            "<input type="text" name="id_user" value="<?php echo $id_user;?>" style="display:none;">"
             <input type="submit" value="Modificar DetalleAmbito">
         <?php } else { ?>
             <p>
@@ -147,6 +147,5 @@
 
         mysqli_close($conn);
     ?>
-    <p><a href="/views/home.html">Regresar</a></p>
   </body>
 </html>

@@ -35,9 +35,9 @@ CREATE TABLE Conexion
   ID_Ambito INT NOT NULL,
   
   PRIMARY KEY (ID_User1, ID_User2, ID_Ambito),
-  FOREIGN KEY (ID_User1) REFERENCES Usuario(ID_User),
-  FOREIGN KEY (ID_User2) REFERENCES Usuario(ID_User),
-  FOREIGN KEY (ID_Ambito) REFERENCES Ambito(ID_Ambito)
+  FOREIGN KEY (ID_User1) REFERENCES Usuario(ID_User) ON DELETE CASCADE,
+  FOREIGN KEY (ID_User2) REFERENCES Usuario(ID_User) ON DELETE CASCADE,
+  FOREIGN KEY (ID_Ambito) REFERENCES Ambito(ID_Ambito) ON DELETE CASCADE
 );
 
 CREATE TABLE DetalleAmbito
@@ -47,8 +47,8 @@ CREATE TABLE DetalleAmbito
   ID_Ambito INT NOT NULL,
   
   PRIMARY KEY (ID_User, ID_Ambito),
-  FOREIGN KEY (ID_User) REFERENCES Usuario(ID_User),
-  FOREIGN KEY (ID_Ambito) REFERENCES Ambito(ID_Ambito)
+  FOREIGN KEY (ID_User) REFERENCES Usuario(ID_User) ON DELETE CASCADE,
+  FOREIGN KEY (ID_Ambito) REFERENCES Ambito(ID_Ambito) ON DELETE CASCADE
 );
 
 CREATE TABLE DetalleAmbito_Interes
@@ -58,7 +58,7 @@ CREATE TABLE DetalleAmbito_Interes
   ID_Ambito INT NOT NULL,
   
   PRIMARY KEY (Interes, ID_User, ID_Ambito),
-  FOREIGN KEY (ID_User, ID_Ambito) REFERENCES DetalleAmbito(ID_User, ID_Ambito)
+  FOREIGN KEY (ID_User, ID_Ambito) REFERENCES DetalleAmbito(ID_User, ID_Ambito) ON DELETE CASCADE
 );
 
 CREATE TABLE DetalleAmbito_Gusto
@@ -68,7 +68,7 @@ CREATE TABLE DetalleAmbito_Gusto
   ID_Ambito INT NOT NULL,
   
   PRIMARY KEY (Gusto, ID_User, ID_Ambito),
-  FOREIGN KEY (ID_User, ID_Ambito) REFERENCES DetalleAmbito(ID_User, ID_Ambito)
+  FOREIGN KEY (ID_User, ID_Ambito) REFERENCES DetalleAmbito(ID_User, ID_Ambito) ON DELETE CASCADE
 );
 
 CREATE TABLE DetalleAmbito_Actividad
@@ -78,7 +78,7 @@ CREATE TABLE DetalleAmbito_Actividad
   ID_Ambito INT NOT NULL,
   
   PRIMARY KEY (Actividad, ID_User, ID_Ambito),
-  FOREIGN KEY (ID_User, ID_Ambito) REFERENCES DetalleAmbito(ID_User, ID_Ambito)
+  FOREIGN KEY (ID_User, ID_Ambito) REFERENCES DetalleAmbito(ID_User, ID_Ambito) ON DELETE CASCADE
 );
 
 CREATE TABLE Mensaje
@@ -92,6 +92,6 @@ CREATE TABLE Mensaje
   ID_Ambito INT NOT NULL,
   
   PRIMARY KEY (ID_Mensaje, ID_User1, ID_User2),
-  FOREIGN KEY (ID_Sender) REFERENCES Usuario(ID_User),
-  FOREIGN KEY (ID_User1, ID_User2, ID_Ambito) REFERENCES Conexion(ID_User1, ID_User2, ID_Ambito)
+  FOREIGN KEY (ID_Sender) REFERENCES Usuario(ID_User) ON DELETE CASCADE,
+  FOREIGN KEY (ID_User1, ID_User2, ID_Ambito) REFERENCES Conexion(ID_User1, ID_User2, ID_Ambito) ON DELETE CASCADE
 );

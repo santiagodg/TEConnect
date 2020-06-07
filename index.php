@@ -19,7 +19,7 @@ session_start();
  
 // Check if the user is already logged in, if yes then redirect him to welcome page
 if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
-    header("location: /views/home.html"); //Locacion del index en la computadora
+    header("location: /views/home.php"); //Locacion del index en la computadora
     ///TEConnect-master/index.html
     exit;
 }
@@ -50,7 +50,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if(empty($correo_err) && empty($password_u_err)){
         // Prepare a select statement
         $sql = "SELECT ID_User, Correo, Contrasena FROM Usuario WHERE Correo = ?";
-        $id = "SELECT ID_User FROM Usuario WHERE Correo =".$correo;
         
         if($stmt = mysqli_prepare($conn, $sql)){
             // Bind variables to the prepared statement as parameters
@@ -80,11 +79,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             // Store data in session variables
                             $_SESSION["loggedin"] = true;
                             $_SESSION["correo"] = $correo;
-                            $_SESSION["id"] = $id;
-                                 
+                            $_SESSION["id"] = $id;   
                             
                             // Redirect user to welcome page
-                            header("location: /views/home.html");
+                            header("location: /views/home.php");
                         } else{
                             // Display an error message if password is not valid
                             $password_u_err = "La contraseña es invalida";
@@ -137,7 +135,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Login">
             </div>
-            <p><a href="/views/Usuario.php">Registrate</a></p>
+            <p><a href="/views/RegistrarUsuario.php">Registrate</a></p>
         </form>
     </div>   
 </body>

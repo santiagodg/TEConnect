@@ -135,6 +135,5 @@
 
         mysqli_close($conn);
     ?>
-    <p><a href="/views/home.html">Regresar</a></p>
   </body>
 </html>

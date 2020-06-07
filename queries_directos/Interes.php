@@ -4,12 +4,12 @@
     $password = "";
     $database = "TEConnect";
 
-    $gusto = "";
+    $interes = "";
     $id_user = "";
     $id_ambito = "";
 
     date_default_timezone_set('America/Monterrey');
-
+   
     // Create connection
     $conn = mysqli_connect($servername, $username, $password, $database);
     // Check connection
@@ -17,11 +17,11 @@
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_REQUEST['action']) && $_REQUEST["action"]=="newGusto") {
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_REQUEST['action']) && $_REQUEST["action"]=="newInteres") {
         if ($_POST['id_user']!='' && $_POST['id_ambito']!='') {
-            $sql = "INSERT INTO DetalleAmbito_Gusto VALUES('".$_POST['gusto']."',".$_POST['id_user'].",".$_POST['id_ambito'].");";
+            $sql = "INSERT INTO DetalleAmbito_Interes VALUES('".$_POST['interes']."',".$_POST['id_user'].",".$_POST['id_ambito'].");";
             if (mysqli_query($conn, $sql)) {
-                echo "<p style=\"color:green\">Se registró el gusto correctamente</p>";
+                echo "<p style=\"color:green\">Se registró el interes correctamente</p>";
             } else {
                 echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
             }
@@ -30,11 +30,11 @@
         }
     }
 
-    if (isset($_REQUEST['action']) && $_REQUEST["action"]=="deleteGusto") {
+    if (isset($_REQUEST['action']) && $_REQUEST["action"]=="deleteInteres") {
         if ($_REQUEST['id_ambito']>0 && $_REQUEST['id_user']>0) {
-            $sql = "DELETE FROM DetalleAmbito_Gusto WHERE ID_User=".$_REQUEST['id_user']." AND ID_Ambito=".$_REQUEST['id_ambito'];
+            $sql = "DELETE FROM DetalleAmbito_Interes WHERE ID_User=".$_REQUEST['id_user']." AND ID_Ambito=".$_REQUEST['id_ambito'];
             if (mysqli_query($conn, $sql)) {
-                echo "<p style=\"color:green\">Se eliminó el gusto correctamente</p>";
+                echo "<p style=\"color:green\">Se eliminó el interes correctamente</p>";
             } else {
                 echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
             }
@@ -45,10 +45,10 @@
 
     if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyView") {
         if ($_REQUEST['id_ambito']>0 && $_REQUEST['id_user']>0) {
-            $sql = "SELECT * FROM DetalleAmbito_Gusto WHERE ID_Ambito=".$_REQUEST['id_ambito']." AND ID_Ambito=".$_REQUEST['id_ambito'];
+            $sql = "SELECT * FROM DetalleAmbito_Interes WHERE ID_Ambito=".$_REQUEST['id_ambito']." AND ID_Ambito=".$_REQUEST['id_ambito'];
             $result = mysqli_query($conn, $sql);
             if($row = mysqli_fetch_assoc($result)){
-                $gusto = $row["Gusto"];
+                $interes = $row["Interes"];
                 $id_user = $row["ID_User"];
                 $id_ambito = $row["ID_Ambito"];
             }
@@ -57,17 +57,15 @@
         }
     }
 
-    if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyGusto") {
+    if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyInteres") {
         if ($_POST['id_ambito']>0 && $_POST['id_user']>0) {
 
-            $sql = "UPDATE DetalleAmbito_Gusto
-                    SET Gusto='".$_POST['gusto']."',
-                        ID_User='".$_POST['id_user']."',
-                        ID_Ambito='".$_POST['id_ambito']."' ".
+            $sql = "UPDATE DetalleAmbito_Interes
+                    SET Interes='".$_POST['interes']."' ".
                     "WHERE ID_Ambito=".$_POST['id_ambito']." AND ID_User=".$_POST['id_user'].";";
 
             if (mysqli_query($conn, $sql)) {
-                echo "<p style=\"color:green\">El gusto fue modificado</p>";
+                echo "<p style=\"color:green\">El interes fue modificado</p>";
             } else {
                 echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
             }
@@ -84,19 +82,20 @@
     <link rel="stylesheet" type="text/css" href="/views/css/styles.css">
     <link rel="stylesheet" type="text/css" href="/views/css/bootstrap.min.css">
     <script type="text/javascript" src="/views/js/bootstrap.bundle.min.js"></script>
-    <title>TEConnect | Gusto</title>
+    <title>TEConnect | Interes</title>
 </head>
 <body>
     <h1>TEConnect</h1>
-    <h2>Gusto</h2>
+    <h2>Interes</h2>
     <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>" enctype="multipart/form-data">
+        
 
         <?php if (isset($_REQUEST['action']) && $_REQUEST["action"]=="modifyView") { ?>
             <p>
-                <label>Descripcion del gusto</label>
-                <input type="text" name="gusto" value="<?php echo $gusto;?>">
+                <label>Descripcion del interes</label>
+                <input type="text" name="interes" value="<?php echo $interes;?>">
             </p>
-            <input type="text" name="action" value="modifyGusto" style="display:none;">
+            <input type="text" name="action" value="modifyInteres" style="display:none;">
             <input type="text" name="id_ambito" value="<?php echo $id_ambito;?>" style="display:none;">
             <input type="text" name="id_user" value="<?php echo $id_user;?>" style="display:none;">
             <input type="submit" value="Modificar DetalleAmbito">
@@ -109,16 +108,12 @@
                 <label>Ambito</label>
                 <input type="text" name="id_ambito" value="<?php echo $id_ambito;?>">
             </p>
-            <p>
-                <label>Descripcion del gusto</label>
-                <input type="text" name="gusto" value="<?php echo $gusto;?>">
-            </p>
-            <input type="hidden" name="action" value="newGusto" style="display:none;">
+            <input type="hidden" name="action" value="newInteres" style="display:none;">
             <input type="submit" value="Agregar DetalleAmbito">
         <?php } ?>
     </form><br>
     <?php
-        $sql = "SELECT * FROM DetalleAmbito_Gusto";
+        $sql = "SELECT * FROM DetalleAmbito_Interes";
         $result = mysqli_query($conn, $sql);
 
         if (mysqli_num_rows($result) > 0) {
@@ -126,7 +121,7 @@
             echo "<tr>";
             echo "<th>ID_Ambito</th>";
             echo "<th>ID_User</th>";
-            echo "<th>Gusto</th>";
+            echo "<th>Interes</th>";
             echo "<th>&nbsp</th>";
             echo "<th>&nbsp</th>";
             echo "</tr>";
@@ -137,9 +132,9 @@
                 echo "<tr>";
                 echo "<td>".$row["ID_Ambito"]."</td>";
                 echo "<td>".$row["ID_User"]."</td>";
-                echo "<td>".$row["Gusto"]."</td>";
+                echo "<td>".$row["Interes"]."</td>";
                 echo "<td><a href=\"".$_SERVER['PHP_SELF']."?action=modifyView&id_ambito=".$row["ID_Ambito"]."&id_user=".$row["ID_User"]."\">Modify</a></td>";
-                echo "<td><a href=\"".$_SERVER['PHP_SELF']."?action=deleteGusto&id_ambito=".$row["ID_Ambito"]."&id_user=".$row["ID_User"]."\">Delete</a></td>";
+                echo "<td><a href=\"".$_SERVER['PHP_SELF']."?action=deleteInteres&id_ambito=".$row["ID_Ambito"]."&id_user=".$row["ID_User"]."\">Delete</a></td>";
                 echo "</tr>";
             }
         }
@@ -147,6 +142,5 @@
 
         mysqli_close($conn);
     ?>
-    <p><a href="/views/home.html">Regresar</a></p>
   </body>
 </html>
