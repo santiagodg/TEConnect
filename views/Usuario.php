@@ -118,7 +118,7 @@
                         Apellido='".$_POST['apellido']."',
                         Correo='".$_POST['correo']."',
                         LugarOrigen='".$_POST['lugarOrigen']."',".
-                        (isset($_REQUEST['foto']) && $_POST['foto'] != '' ? "',Foto='" . $maxID.pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION) . "'," : "")."
+                        (isset($_FILES['foto']) && $_FILES['foto'] != '' ? " Foto='" . $_POST['id_user'] . "." . pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION) . "'," : "")."
                         FechaNacimiento='".$_POST['fechaNacimiento']."',
                         Carrera='".$_POST['carrera']."',
                         Contrasena='".$_POST['contrasena']."',
@@ -127,6 +127,22 @@
 
             if (mysqli_query($conn, $sql)) {
                 echo "<p style=\"color:green\">El usuario fue modificado</p>";
+                if ( isset($_FILES['foto']) && $_FILES['foto']['error'] != 4 ) {
+                    var_dump($_FILES['foto']);
+                    if ($os == "Linux") {
+                        $uploaddir = realpath($_SERVER['DOCUMENT_ROOT'])."/upload/";
+                    } else {
+                        $uploaddir = realpath($_SERVER['DOCUMENT_ROOT'])."\\upload\\";
+                    }
+                    $uploadfile = $uploaddir . $_POST['id_user'] . "." . pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
+                    if (move_uploaded_file($_FILES['foto']['tmp_name'], $uploadfile)) {
+                        echo "<p style=\"color:green\">Se guardó la foto correctamente</p>";
+                    } else {
+                        echo "<p style=\"color:red\">Error: No se pudo guardar la foto</p>";
+                    }
+                } else {
+                    echo "<p style=\"color:blue\">No se guardó ninguna foto nueva</p>";
+                }
             } else {
                 echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
             }
