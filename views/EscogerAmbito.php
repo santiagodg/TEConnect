@@ -30,7 +30,18 @@
     {
       echo "<div class=\"col\">";
       echo "<div class=\"card\">";
-      echo "<svg class=\"bd-placeholder-img card-img-top\" width=\"100%\" height=\"50vh\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\" focusable=\"false\" role=\"img\" aria-label=\"Placeholder: Image cap\"><title>Placeholder</title><rect width=\"100%\" height=\"100%\" fill=\"#868e96\"></rect></svg>";
+      switch ($row["ID_Ambito"])
+      {
+        case '1':
+          echo '<img src="/views/images/profesional.jpg" style="display: block; max-width:348px; max-height:300px; width: auto; height: auto; margin-left: auto; margin-right: auto;">';
+          break;
+        case '2':
+          echo '<img src="/views/images/amistad.jpg" style="display: block; max-width:348px; max-height:300px; width: auto; height: auto; margin-left: auto; margin-right: auto;">';
+          break;
+        case '3':
+          echo '<img src="/views/images/romantico.png" style="display: block; max-width:348px; max-height:300px; width: auto; height: auto; margin-left: auto; margin-right: auto;">';
+          break;
+      }
       echo "<div class=\"card-body\">";
       echo "<h5 class=\"card-title\">" . $row["Nombre"] . "</h5>";
       echo "<p class=\"card-text\">Some quick example text to build on the card title and make up the bulk of the card's content.</p>";
