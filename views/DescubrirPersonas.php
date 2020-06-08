@@ -39,11 +39,35 @@
     stopConnection($conn);
   }
 
-  if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST["action"]=="newConnection")
+  function createDetalleAmbito($userId, $ambitoId, $description)
   {
-    createTEConnectConection($_SESSION['id'], $_POST["id_user2"], $_POST["id_ambito"]);
-    createTEConnectConection($_POST["id_user2"], $_SESSION['id'], $_POST["id_ambito"]); // symmetry
-    header("Location: /views/DescubrirPersonas.php?ambito=" . $_POST["id_ambito"]);
+    $conn = startConnection();
+    
+    $sql = "
+      INSERT INTO DetalleAmbito
+      VALUES ('" . $description . "', " . $userId . ", " . $ambitoId . ");
+    ";
+
+    $result = mysqli_query($conn, $sql);
+
+    stopConnection($conn);
+  }
+
+  if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']))
+  {
+    switch ($_POST["action"])
+    {
+      case "newConnection":
+        createTEConnectConection($_SESSION['id'], $_POST["id_user2"], $_POST["id_ambito"]);
+        createTEConnectConection($_POST["id_user2"], $_SESSION['id'], $_POST["id_ambito"]); // symmetry
+        header("Location: /views/DescubrirPersonas.php?ambito=" . $_POST["id_ambito"]);
+        break;
+
+      case "createDetalleAmbito":
+        createDetalleAmbito($_SESSION["id"], $_POST["ambito"], $_POST["description"]);
+        header("Location: /views/DescubrirPersonas.php?ambito=" . $_POST["ambito"]);
+        break;
+    }
   }
 
   function hasDetalleAmbito($idUser)
@@ -71,6 +95,18 @@
   function displayFormForDetalleAmbito()
   {
     // displays form to register self on ambito
+
+    echo '<h1 class="mb-5">Registro de Perfil Profesional</h1>';
+    echo '<form action="/views/DescubrirPersonas.php" method="post">';
+    echo '<input type="hidden" name="action" value="createDetalleAmbito">';
+    echo '<input type="hidden" name="ambito" value="' . $_GET["ambito"] . '">';
+    echo '<p>Antes de empezar a buscar personas similares a ti, por favor ingresa una descripción para tu perfil.</p>';
+    echo '<div class="form-group">';
+    echo '<label for="descripcion">¡Preséntate a los demás!</label>';
+    echo '<textarea class="form-control" id="descripcion" name="description" rows="3"></textarea>';
+    echo '</div>';
+    echo '<button type="submit" class="btn btn-primary">Registrar</button>';
+    echo '</form>';
   }
 
   function getSameAmbitoUsersNotConnectedTo($idUser)
@@ -146,27 +182,40 @@
     // already connected to
 
     $displayableUserIdsArray = getSameAmbitoUsersNotConnectedTo($_SESSION["id"]);
-    $randomIndex = array_rand($displayableUserIdsArray);
-    $randomUserId = $displayableUserIdsArray[$randomIndex];
-    $shownUserInfo = getDetalleAmbitoDesciptionOfUser($randomUserId);
+    if (!empty($displayableUserIdsArray))
+    {
+      $randomIndex = array_rand($displayableUserIdsArray);
+      $randomUserId = $displayableUserIdsArray[$randomIndex];
+      $shownUserInfo = getDetalleAmbitoDesciptionOfUser($randomUserId);
 
-    echo '<div class="card text-center">';
-    echo '<img src="/upload/' . $shownUserInfo["photoFilename"] . '" style="display: block; max-width:1108px; max-height:350px; width: auto; height: auto; margin-left: auto; margin-right: auto;">';
-    echo '<div class="card-body">';
-    echo '<h5 class="card-title">' . $shownUserInfo["name"] . '</h5>';
-    echo '<p class="card-text">' . $shownUserInfo["description"] . '</p>';
-    echo '<div class="row no-gutters justify-content-around">';
-    echo '<form action="/views/DescubrirPersonas.php" method="post">';
-    echo '<input type="hidden" name="id_user2" value="' . $shownUserInfo["id"] . '">';
-    echo '<input type="hidden" name="id_ambito" value="' . $_GET["ambito"] . '">';
-    echo '<input type="hidden" name="action" value="newConnection">';
-    echo '<a href="/views/DescubrirPersonas.php?ambito=' . $_GET["ambito"] . '" class="btn btn-primary mx-5">Pasar</a>';
-    echo '<button class="btn btn-primary mx-5">Conectar</button>';
-    echo '</form>';
-    echo '</div>';
-    echo '</div>';
-    echo '</div>';
+      echo '<div class="card text-center">';
+      echo '<img src="/upload/' . $shownUserInfo["photoFilename"] . '" style="display: block; max-width:1108px; max-height:350px; width: auto; height: auto; margin-left: auto; margin-right: auto;">';
+      echo '<div class="card-body">';
+      echo '<h5 class="card-title">' . $shownUserInfo["name"] . '</h5>';
+      echo '<p class="card-text">' . $shownUserInfo["description"] . '</p>';
+      echo '<div class="row no-gutters justify-content-around">';
+      echo '<form action="/views/DescubrirPersonas.php" method="post">';
+      echo '<input type="hidden" name="id_user2" value="' . $shownUserInfo["id"] . '">';
+      echo '<input type="hidden" name="id_ambito" value="' . $_GET["ambito"] . '">';
+      echo '<input type="hidden" name="action" value="newConnection">';
+      echo '<a href="/views/DescubrirPersonas.php?ambito=' . $_GET["ambito"] . '" class="btn btn-primary mx-5">Pasar</a>';
+      echo '<button class="btn btn-primary mx-5">Conectar</button>';
+      echo '</form>';
+      echo '</div>';
+      echo '</div>';
+      echo '</div>';
 
+      return True; // everything went ok
+    }
+
+    return False; // no displayable user was found
+  }
+
+  function displayNoMorePeopleMessage()
+  {
+    echo '<h1 class="text-center mb-5">Lo sentimos, ya no hay más usuarios</h1>';
+    echo '<p class="text-center">Por favor vuelva más tarde.</p>';
+    echo '<div class="text-center"><a class="btn btn-primary text-center" href="/views/EscogerAmbito.php">Volver</a></div>';
   }
 
   function displayContent()
@@ -176,7 +225,10 @@
 
     if (hasDetalleAmbito($_SESSION['id']))
     {
-      displayRandomPersonCard();
+      if (!displayRandomPersonCard())
+      {
+        displayNoMorePeopleMessage();
+      }
     }
     else
     {
@@ -223,7 +275,7 @@
       <div class="row py-5">
         <div class="col">
           <?php
-            displayRandomPersonCard();
+            displayContent();
           ?>
         </div>
       </div>
