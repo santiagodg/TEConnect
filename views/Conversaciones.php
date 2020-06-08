@@ -1,3 +1,126 @@
+<?php
+  session_start();
+
+  function startMySQLConnection()
+  {
+    $servername = "127.0.0.1";
+    $username = "root";
+    $password = "";
+    $database = "TEConnect";
+
+    $conn = mysqli_connect($servername, $username, $password, $database);
+    if (!$conn)
+    {
+      die("Connection failed: " . mysqli_connect_error());
+    }
+
+    return $conn;
+  }
+
+  function stopMySQLConnection($conn)
+  {
+    mysqli_close($conn);
+  }
+
+  function numberOfConnectionsOfUser($userId)
+  {
+    $conn = startMySQLConnection();
+
+    $sql = "SELECT COUNT(*) AS count FROM Conexion WHERE ID_User1 = " . $userId . ";";
+    $result = mysqli_query($conn, $sql);
+    if ($row = mysqli_fetch_assoc($result))
+    {
+      return $row["count"];
+    }
+
+    stopMySQLConnection($conn);
+  }
+
+  function getConnectionIdsFromUser($userId)
+  {
+    $conn = startMySQLConnection();
+
+    $sql = "
+      SELECT
+        ID_User1 AS user1_id,
+        ID_User2 AS user2_id,
+        ID_Ambito AS ambito_id
+      FROM Conexion
+      WHERE ID_User1 = " . $userId . "
+      ORDER BY FechaCreada DESC;
+    ";
+    $result = mysqli_query($conn, $sql);
+    $output = array();
+    while ($row = mysqli_fetch_assoc($result))
+    {
+      $output[] = $row;
+    }
+
+    stopMySQLConnection($conn);
+
+    return $output;
+  }
+
+  function getConversationInfo($connIds)
+  {
+    $conn = startMySQLConnection();
+
+    $sql = "
+      SELECT
+        Usuario.ID_User AS id,
+        CONCAT(Usuario.PrimerNombre, ' ', Usuario.Apellido) AS name,
+        Usuario.Foto AS photoFilename,
+        DetalleAmbito.Descripción AS description
+      FROM Conexion
+        LEFT JOIN Usuario
+          ON Conexion.ID_User2 = Usuario.ID_User
+        LEFT JOIN DetalleAmbito
+          ON Conexion.ID_User2 = DetalleAmbito.ID_User
+      WHERE
+        Conexion.ID_User1 = " . $connIds["user1_id"] . " AND 
+        Conexion.ID_User2 = " . $connIds["user2_id"] . " AND
+        Conexion.ID_Ambito = " . $connIds["ambito_id"] . ";
+    ";
+    $result = mysqli_query($conn, $sql);
+    $output = array();
+    if ($row = mysqli_fetch_assoc($result))
+    {
+      $output = $row;
+    }
+
+    stopMySQLConnection($conn);
+
+    return $output;
+  }
+
+  function displayContent()
+  {
+    if (numberOfConnectionsOfUser($_SESSION["id"]) > 0)
+    {
+      $connectionIds = getConnectionIdsFromUser($_SESSION["id"]);
+      foreach ($connectionIds as $connId)
+      {
+        $connInfo = getConversationInfo($connId);
+
+        echo '<div class="media py-3">';
+        echo '<img src="/upload/' . $connInfo["photoFilename"] . '" class="mr-3" style="display: block; max-width:64px; max-height:64px; width: auto; height: auto;">';
+        echo '<div class="media-body">';
+        echo '<a href="/views/Chat.php?User=' . $connInfo["id"] . '"><h5 class="mt-0">' . $connInfo["name"] . '</h5></a>';
+        echo $connInfo["description"];
+        echo '</div>';
+        echo '</div>';
+        echo '<hr>';
+      }
+    }
+    else
+    {
+      echo '<h1 class="text-center mb-5">No se encontraron conexiones</p>';
+      echo '<p class="text-center">Vaya a la sección de Descubrir Personas para conectarte con otros.</p>';
+      echo '<div class="text-center"><a href="/views/DescubrirPersonas.php">Ir a Descubrir Personas</a></div>';
+    }
+  }
+?>
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -38,45 +161,9 @@
       <div class="row py-5">
         <div class="col-3"></div>
         <div class="col">
-          <div class="media py-3">
-            <svg class="bd-placeholder-img mr-3" width="64" height="64" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 64x64"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect></svg>
-            <div class="media-body">
-              <a href="/views/Chat.php?otherUser=1"><h5 class="mt-0">Santiago</h5></a>
-              Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
-            </div>
-          </div>
-          <hr>
-          <div class="media py-3">
-            <svg class="bd-placeholder-img mr-3" width="64" height="64" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 64x64"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect></svg>
-            <div class="media-body">
-              <a href="/views/Chat.php?otherUser=1"><h5 class="mt-0">Shaar</h5></a>
-              Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
-            </div>
-          </div>
-          <hr>
-          <div class="media py-3">
-            <svg class="bd-placeholder-img mr-3" width="64" height="64" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 64x64"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect></svg>
-            <div class="media-body">
-              <a href="/views/Chat.php?otherUser=1"><h5 class="mt-0">Camilo</h5></a>
-              Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
-            </div>
-          </div>
-          <hr>
-          <div class="media py-3">
-            <svg class="bd-placeholder-img mr-3" width="64" height="64" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 64x64"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect></svg>
-            <div class="media-body">
-              <a href="/views/Chat.php?otherUser=1"><h5 class="mt-0">Nadia</h5></a>
-              Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
-            </div>
-          </div>
-          <hr>
-          <div class="media py-3">
-            <svg class="bd-placeholder-img mr-3" width="64" height="64" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 64x64"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect></svg>
-            <div class="media-body">
-              <a href="/views/Chat.php?otherUser=1"><h5 class="mt-0">Sofia</h5></a>
-              Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
-            </div>
-          </div>
+          <?php
+            displayContent();
+          ?>
         </div>
         <div class="col-3"></div>
       </div>
