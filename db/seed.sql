@@ -28,22 +28,60 @@ VALUES (20200601, 1, 3, 3),
  (20200602, 1, 2, 1),
  (20200303, 4, 5, 2);
 
+-- simetría
+-- INSERT INTO Conexion
+-- VALUES (20200601, 3, 1, 3),
+--  (20000520, 4, 2, 2),
+--  (20200305, 5, 2, 3),
+--  (20200602, 2, 1, 1),
+--  (20200303, 5, 4, 2);
+
 INSERT INTO DetalleAmbito_Interes
-VALUES('cine, helado, comedia, futbol', 2, 2),
- ('café, patinaje, bicicleta, gimnasio', 4, 2),
- ('fiestas, antros, bares, conciertos', 5, 3);
+VALUES 
+ ('cine', 2, 2),
+ ('helado', 2, 2),
+ ('comedia', 2, 2),
+ ('futbol', 2, 2),
+ ('café', 4, 2),
+ ('patinaje', 4, 2),
+ ('bicicleta', 4, 2),
+ ('gimnasio', 4, 2),
+ ('fiestas', 5, 3),
+ ('antros', 5, 3),
+ ('bares', 5, 3),
+ ('conciertos', 5, 3);
 
 INSERT INTO DetalleAmbito_Gusto     
-VALUES('libros, cine clásico, poesía', 1, 3),
- ('basquet, fiestas, bares', 3, 3),
- ('discotecas, antros, fiestas, salsa, reggaeton', 2, 3),
- ('museos, café, cine clásico, idiomas', 5, 3);
+VALUES
+ ('libros', 1, 1),
+ ('cine', 1, 1),
+ ('clásico', 1, 1),
+ ('poesía', 1, 1),
+ ('basquet', 3, 3),
+ ('fiestas', 3, 3),
+ ('bares', 3, 3),
+ ('discotecas', 2, 2),
+ ('antros', 2, 2),
+ ('fiestas', 2, 2),
+ ('salsa', 2, 2),
+ ('reggaeton', 2, 2),
+ ('museos', 5, 3),
+ ('café', 5, 3),
+ ('cine clásico', 5, 3),
+ ('idiomas', 5, 3);
 
 INSERT INTO DetalleAmbito_Actividad   
-VALUES('profesionalismo, actitud positiva, trabajador', 1, 1),
- ('Activo, consistencia, perseverancia, estándares', 2, 1);
+VALUES
+ ('profesionalismo', 1, 1),
+ ('actitud positiva', 1, 1),
+ ('trabajador', 1, 1),
+ ('activo', 2, 2),
+ ('consistencia', 2, 2),
+ ('perseverancia', 2, 2),
+ ('estándares', 2, 2);
 
 INSERT INTO Mensaje
-VALUES(1, 'hey, cómo estás?',	1, 1, 3, 3),
- (2,' buenas tardes, cómo te encuentras?', 2, 1, 2, 1),
- (3, 'Qué onda!',	5, 2, 5, 2);
+VALUES
+ ("hey, cómo estás?", 20200603, 1, 1, 1, 3, 3),
+ ("buenas tardes, cómo te encuentras?", 20200604, 2, 2, 1, 2, 1),
+ ("Qué onda!", 20200605, 3, 5, 2, 5, 3);
