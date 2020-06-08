@@ -37,7 +37,7 @@
 
   function echoRandomPersonCard()
   {
-    // return random person from that also has registered on ambito and
+    // return random person that also has registered on ambito and
     // is not self
 
     $idAmbito = $_GET["ambito"];
