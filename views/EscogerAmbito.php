@@ -1,3 +1,64 @@
+<?php
+  function startConnection()
+  {
+    $servername = "127.0.0.1";
+    $username = "root";
+    $password = "";
+    $database = "TEConnect";
+
+    $conn = mysqli_connect($servername, $username, $password, $database);
+    if (!$conn)
+    {
+      die("Connection failed: " . mysqli_connect_error());
+    }
+
+    return $conn;
+  }
+
+  function stopConnection($conn)
+  {
+    mysqli_close($conn);
+  }
+
+  function echoAmbitoCard($id_ambito)
+  {
+    $conn = startConnection();
+
+    $sql = "SELECT * FROM Ambito WHERE ID_Ambito = " . $id_ambito . ";";
+    $result = mysqli_query($conn, $sql);
+    if ($row = mysqli_fetch_assoc($result)) 
+    {
+      echo "<div class=\"col\">";
+      echo "<div class=\"card\">";
+      echo "<svg class=\"bd-placeholder-img card-img-top\" width=\"100%\" height=\"50vh\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\" focusable=\"false\" role=\"img\" aria-label=\"Placeholder: Image cap\"><title>Placeholder</title><rect width=\"100%\" height=\"100%\" fill=\"#868e96\"></rect></svg>";
+      echo "<div class=\"card-body\">";
+      echo "<h5 class=\"card-title\">" . $row["Nombre"] . "</h5>";
+      echo "<p class=\"card-text\">Some quick example text to build on the card title and make up the bulk of the card's content.</p>";
+      echo "<a href=\"/views/DescubrirPersonas.php?ambito=" . $row["ID_Ambito"] . "\" class=\"btn btn-primary\">Go somewhere</a>";
+      echo "</div>";
+      echo "</div>";
+      echo "</div>";
+    }
+
+    stopConnection($conn);
+  }
+
+  function getAmbitosIdArray()
+  {
+    $conn = startConnection();
+
+    $sql = "SELECT ID_Ambito FROM Ambito;";
+    $result = mysqli_query($conn, $sql);
+    while ($row = mysqli_fetch_assoc($result)) 
+    {
+      $outputArray[] = $row["ID_Ambito"];
+    }
+
+    stopConnection($conn);
+
+    return $outputArray;
+  }
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -34,36 +95,12 @@
 
     <div class="container">
       <div class="row py-5">
-        <div class="col">
-          <div class="card">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="50vh" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image cap"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect></svg>
-            <div class="card-body">
-              <h5 class="card-title">Social</h5>
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-              <a href="/views/DescubrirPersonas.php?ambito=1" class="btn btn-primary">Go somewhere</a>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="50vh" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image cap"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect></svg>
-            <div class="card-body">
-              <h5 class="card-title">Romántico</h5>
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-              <a href="/views/DescubrirPersonas.php?ambito=2" class="btn btn-primary">Go somewhere</a>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="50vh" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image cap"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect></svg>
-            <div class="card-body">
-              <h5 class="card-title">Profesional</h5>
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-              <a href="/views/DescubrirPersonas.php?ambito=3" class="btn btn-primary">Go somewhere</a>
-            </div>
-          </div>
-        </div>
+        <?php
+          foreach (getAmbitosIdArray() as $id_ambito)
+          {
+            echoAmbitoCard($id_ambito);
+          }
+        ?>
       </div>
     </div>
 
