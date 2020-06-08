@@ -1,6 +1,8 @@
 <?php
   function startConnection()
   {
+    // start mysql connection
+
     $servername = "127.0.0.1";
     $username = "root";
     $password = "";
@@ -17,11 +19,27 @@
 
   function stopConnection($conn)
   {
+    // close the mysql connection
+
     mysqli_close($conn);
+  }
+
+  function hasDetalleAmbito()
+  {
+    // return true if user has registered a detalle ambito
+    // false if not
+  }
+
+  function displayFormForDetalleAmbito()
+  {
+    // displays form to register self on ambito
   }
 
   function echoRandomPersonCard()
   {
+    // return random person from that also has registered on ambito and
+    // is not self
+
     $idAmbito = $_GET["ambito"];
     
     $conn = startConnection();
@@ -34,6 +52,12 @@
     stopConnection($conn);
 
     return false;
+  }
+
+  function displayContent()
+  {
+    // choose to display a person or display form for
+    // registering in detalle ambito
   }
 ?>
 
@@ -75,7 +99,7 @@
       <div class="row py-5">
         <div class="col">
           <?php
-            echoRandomPersonCard()
+            
           ?>
           <div class="card">
             <svg class="bd-placeholder-img card-img-top" width="100%" height="50vh" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image cap"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect></svg>
