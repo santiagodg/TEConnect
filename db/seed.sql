@@ -1,10 +1,10 @@
 INSERT INTO Usuario 
 VALUES
- (1, 'Andres', 'Lopez', 'A01649372@itesm.mx', 'Monterrey','1.jpg', 19990622, 'LIN', 20200601, 'alopez22','A01649372' ),
- (2, 'Mariano', 'Perez', 'A03827499@itesm.mx','CDMX', '2.jpg', 19981002, 'LAE',20000520, 'mperez98', 'A03827499'),
- (3, 'Andrea', 'Garza', 'A01027497@itesm.mx','Monterrey', '3.jpg', 20000705, 'ARQ', 20200305, 'agarza00', 'A01027497'),
+ (1, 'Andres', 'Lopez', 'A01649372@itesm.mx', 'Monterrey','1.png', 19990622, 'LIN', 20200601, 'alopez22','A01649372' ),
+ (2, 'Mariano', 'Perez', 'A03827499@itesm.mx','CDMX', '2.png', 19981002, 'LAE',20000520, 'mperez98', 'A03827499'),
+ (3, 'Andrea', 'Garza', 'A01027497@itesm.mx','Monterrey', '3.png', 20000705, 'ARQ', 20200305, 'agarza00', 'A01027497'),
  (4, 'Javier', 'Peña','A01274665@itesm.mx','Houston','4.jpg', 19970321, 'ITC', 20200602,'jpeña97', 'A01274665'),
- (5, 'Sofia', 'Gomez','A01748277@itesm.mx','Bogotá','5.jpg', 19990415,'LEC', 20200303,'sgomez99','A01748277');
+ (5, 'Sofia', 'Gomez','A01748277@itesm.mx','Bogotá','5.png', 19990415,'LEC', 20200303,'sgomez99','A01748277');
 
 
 INSERT INTO Ambito 
@@ -29,12 +29,12 @@ VALUES (20200601, 1, 3, 3),
  (20200303, 4, 5, 2);
 
 -- simetría
--- INSERT INTO Conexion
--- VALUES (20200601, 3, 1, 3),
---  (20000520, 4, 2, 2),
---  (20200305, 5, 2, 3),
---  (20200602, 2, 1, 1),
---  (20200303, 5, 4, 2);
+INSERT INTO Conexion
+VALUES (20200601, 3, 1, 3),
+ (20000520, 4, 2, 2),
+ (20200305, 5, 2, 3),
+ (20200602, 2, 1, 1),
+ (20200303, 5, 4, 2);
 
 INSERT INTO DetalleAmbito_Interes
 VALUES 

@@ -1,4 +1,6 @@
 <?php
+  session_start();
+
   function startConnection()
   {
     // start mysql connection
@@ -24,10 +26,46 @@
     mysqli_close($conn);
   }
 
-  function hasDetalleAmbito()
+  function createTEConnectConection($userId1, $userId2, $ambitoId)
+  {
+    $conn = startConnection();
+
+    $sql = "
+      INSERT INTO Conexion
+      VALUES (NOW(), " . $userId1 . ", " . $userId2 . ", " . $ambitoId . ");
+    ";
+    $result = mysqli_query($conn, $sql);
+    
+    stopConnection($conn);
+  }
+
+  if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST["action"]=="newConnection")
+  {
+    createTEConnectConection($_SESSION['id'], $_POST["id_user2"], $_POST["id_ambito"]);
+    createTEConnectConection($_POST["id_user2"], $_SESSION['id'], $_POST["id_ambito"]); // symmetry
+    header("Location: /views/DescubrirPersonas.php?ambito=" . $_POST["id_ambito"]);
+  }
+
+  function hasDetalleAmbito($idUser)
   {
     // return true if user has registered a detalle ambito
     // false if not
+
+    $idAmbito = $_GET["ambito"];
+    $hasDetalleAmbito = False;
+
+    $conn = startConnection();
+
+    $sql = "SELECT * FROM DetalleAmbito WHERE ID_User = " . $idUser . " AND ID_Ambito = " . $idAmbito . ";";
+    $result = mysqli_query($conn, $sql);
+    if ($row = mysqli_fetch_assoc($result)) 
+    {
+      $hasDetalleAmbito = True;
+    }
+
+    stopConnection($conn);
+
+    return $hasDetalleAmbito;
   }
 
   function displayFormForDetalleAmbito()
@@ -35,29 +73,115 @@
     // displays form to register self on ambito
   }
 
-  function echoRandomPersonCard()
+  function getSameAmbitoUsersNotConnectedTo($idUser)
   {
-    // return random person that also has registered on ambito and
-    // is not self
+    // return array of user ids that are also registered on ambito,
+    // are not self and not yet connected with self
 
-    $idAmbito = $_GET["ambito"];
-    
     $conn = startConnection();
 
-    $sql = "SELECT * FROM DetalleAmbito WHERE ID_Ambito = " . $idAmbito . " AND ID_User <> " . $_SESSION["id"] . ";";
+    $sql = "
+      SELECT ID_User
+      FROM DetalleAmbito
+      WHERE
+        ID_Ambito = " . $_GET["ambito"] . " AND
+        ID_User <> " . $idUser . " AND
+        ID_User NOT IN (
+          SELECT ID_User2
+          FROM Conexion
+          WHERE
+            ID_User1 = " . $idUser . " AND
+            ID_Ambito = " . $_GET["ambito"] . "
+          );
+    ";
     $result = mysqli_query($conn, $sql);
-    
-    /* NOT FINISHED */
+    $output = array();
+    while ($row = mysqli_fetch_assoc($result)) 
+    {
+      $output[] = $row["ID_User"];
+    }
 
     stopConnection($conn);
 
-    return false;
+    return $output;
+  }
+
+  function getDetalleAmbitoDesciptionOfUser($userId)
+  {
+    // outputs associative array with keys "id", "name", "description",
+    // and "photoFilename" of user
+
+    $conn = startConnection();
+
+    $sql = "
+      SELECT
+        Usuario.ID_User AS id,
+        CONCAT(Usuario.PrimerNombre, \" \", Usuario.Apellido) AS nombre,
+        DetalleAmbito.Descripción AS descripcion,
+        Usuario.Foto AS foto
+      FROM
+        Usuario
+      JOIN DetalleAmbito
+      ON Usuario.ID_User = DetalleAmbito.ID_User
+      WHERE Usuario.ID_User = " . $userId . ";
+    ";
+    $result = mysqli_query($conn, $sql);
+    $output = array();
+    if ($row = mysqli_fetch_assoc($result)) 
+    {
+      $output["id"] = $row["id"];
+      $output["name"] = $row["nombre"];
+      $output["description"] = $row["descripcion"];
+      $output["photoFilename"] = $row["foto"];
+    }
+
+    stopConnection($conn);
+
+    return $output;
+  }
+
+  function displayRandomPersonCard()
+  {
+    // display random person who is registered in same ambito and not
+    // already connected to
+
+    $displayableUserIdsArray = getSameAmbitoUsersNotConnectedTo($_SESSION["id"]);
+    $randomIndex = array_rand($displayableUserIdsArray);
+    $randomUserId = $displayableUserIdsArray[$randomIndex];
+    $shownUserInfo = getDetalleAmbitoDesciptionOfUser($randomUserId);
+
+    echo '<div class="card text-center">';
+    echo '<img src="/upload/' . $shownUserInfo["photoFilename"] . '" style="display: block; max-width:1108px; max-height:350px; width: auto; height: auto; margin-left: auto; margin-right: auto;">';
+    echo '<div class="card-body">';
+    echo '<h5 class="card-title">' . $shownUserInfo["name"] . '</h5>';
+    echo '<p class="card-text">' . $shownUserInfo["description"] . '</p>';
+    echo '<div class="row no-gutters justify-content-around">';
+    echo '<form action="/views/DescubrirPersonas.php" method="post">';
+    echo '<input type="hidden" name="id_user2" value="' . $shownUserInfo["id"] . '">';
+    echo '<input type="hidden" name="id_ambito" value="' . $_GET["ambito"] . '">';
+    echo '<input type="hidden" name="action" value="newConnection">';
+    echo '<a href="/views/DescubrirPersonas.php?ambito=' . $_GET["ambito"] . '" class="btn btn-primary mx-5">Pasar</a>';
+    echo '<button class="btn btn-primary mx-5">Conectar</button>';
+    echo '</form>';
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+
   }
 
   function displayContent()
   {
     // choose to display a person or display form for
     // registering in detalle ambito
+
+    if (hasDetalleAmbito($_SESSION['id']))
+    {
+      displayRandomPersonCard();
+    }
+    else
+    {
+      displayFormForDetalleAmbito();
+    }
   }
 ?>
 
@@ -99,22 +223,8 @@
       <div class="row py-5">
         <div class="col">
           <?php
-            
+            displayRandomPersonCard();
           ?>
-          <div class="card">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="50vh" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image cap"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect></svg>
-            <div class="card-body">
-              <h5 class="card-title">Santiago Díaz</h5>
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-              <div class="row no-gutters justify-content-around">
-                <form action="/views/DescubrirPersonas.php" method="post">
-                  <input type="hidden" name="shownUserID" value="1">
-                  <a href="/views/DescubrirPersonas.php?ambito=1" class="btn btn-primary mx-5">Pasar</a>
-                  <button class="btn btn-primary mx-5">Conectar</button>
-                </form>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
