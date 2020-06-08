@@ -1,3 +1,42 @@
+<?php
+  function startConnection()
+  {
+    $servername = "127.0.0.1";
+    $username = "root";
+    $password = "";
+    $database = "TEConnect";
+
+    $conn = mysqli_connect($servername, $username, $password, $database);
+    if (!$conn)
+    {
+      die("Connection failed: " . mysqli_connect_error());
+    }
+
+    return $conn;
+  }
+
+  function stopConnection($conn)
+  {
+    mysqli_close($conn);
+  }
+
+  function echoRandomPersonCard()
+  {
+    $idAmbito = $_GET["ambito"];
+    
+    $conn = startConnection();
+
+    $sql = "SELECT * FROM DetalleAmbito WHERE ID_Ambito = " . $idAmbito . " AND ID_User <> " . $_SESSION["id"] . ";";
+    $result = mysqli_query($conn, $sql);
+    
+    /* NOT FINISHED */
+
+    stopConnection($conn);
+
+    return false;
+  }
+?>
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -35,6 +74,9 @@
     <div class="container">
       <div class="row py-5">
         <div class="col">
+          <?php
+            echoRandomPersonCard()
+          ?>
           <div class="card">
             <svg class="bd-placeholder-img card-img-top" width="100%" height="50vh" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image cap"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect></svg>
             <div class="card-body">

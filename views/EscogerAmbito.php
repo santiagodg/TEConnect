@@ -49,7 +49,8 @@
 
     $sql = "SELECT ID_Ambito FROM Ambito;";
     $result = mysqli_query($conn, $sql);
-    while ($row = mysqli_fetch_assoc($result)) 
+    $outputArray = array();
+    while ($row = mysqli_fetch_assoc($result))
     {
       $outputArray[] = $row["ID_Ambito"];
     }
@@ -96,9 +97,19 @@
     <div class="container">
       <div class="row py-5">
         <?php
-          foreach (getAmbitosIdArray() as $id_ambito)
+          $ambitosIdArray = getAmbitosIdArray();
+          if (!empty($ambitosIdArray))
           {
-            echoAmbitoCard($id_ambito);
+            foreach ($ambitosIdArray as $id_ambito)
+            {
+              echoAmbitoCard($id_ambito);
+            }
+          }
+          else
+          {
+            echo "<div class=\"col\">";
+            echo "<div class=\"h1 text-center\">No se encontraron ámbitos</div>";
+            echo "</div>";
           }
         ?>
       </div>
