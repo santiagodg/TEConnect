@@ -10,7 +10,7 @@
 
     <link rel="stylesheet" href="/views/css/styles.css">
 
-    <title>TEConnect | Chat</title>
+    <title>TEConnect | Perfil de Otro</title>
   </head>
   <body style="display: flex; flex-flow: column; height: 100%;">
     <nav class="navbar navbar-expand-lg navbar-light bg-light" style="z-index: 2;">
