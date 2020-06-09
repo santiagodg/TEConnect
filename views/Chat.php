@@ -22,6 +22,38 @@
     mysqli_close($conn);
   }
 
+  function createMessage($senderId, $recieverId, $ambitoId, $cuerpo)
+  {
+    $conn = startMySQLConnection();
+
+    $sql = "SELECT MAX(ID_Mensaje) as ID_Mensaje FROM Mensaje;";
+    $result = mysqli_query($conn, $sql);
+    $maxId = 0;
+    if ($row = mysqli_fetch_assoc($result))
+    {
+      $maxId = $row["ID_Mensaje"] + 1;
+    }
+
+    $sql = "
+      INSERT INTO Mensaje
+      VALUES ('" . $cuerpo . "', NOW(), " . $maxId . ", " . $senderId . ", " . $senderId . ", " . $recieverId . ", " . $ambitoId . ");
+    ";
+    mysqli_query($conn, $sql);
+
+    stopMySQLConnection($conn);
+  }
+
+  if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']))
+  {
+    switch ($_POST["action"])
+    {
+      case "newMessage":
+        createMessage($_SESSION["id"], $_POST["recieverId"], $_POST["ambito"], $_POST["cuerpo"]);
+        //header("Location: /views/Chat.php?User=" . $_POST["recieverId"] . "&ambito=" . $_POST["ambito"]);
+        break;
+    }
+  }
+
   function numberOfDisplayableMessages($userId1, $userId2)
   {
     $conn = startMySQLConnection();
@@ -55,7 +87,7 @@
       WHERE
         ID_User1 = " . $userId1 . " AND ID_User2 = " . $userId2 . " OR
         ID_User1 = " . $userId2 . " AND ID_User2 = " . $userId1 . "
-      ORDER BY HoraEnviado
+      ORDER BY HoraEnviado DESC
       LIMIT 4;
     ";
     $result = mysqli_query($conn, $sql);
@@ -64,6 +96,7 @@
     {
       $output[] = $row;
     }
+    $output = array_reverse($output);
 
     stopMySQLConnection($conn);
 
@@ -204,11 +237,14 @@
         ?>
         <div class="col-2"></div>
         <div class="col-8">
-          <form class="form-inline w-100">
+          <form class="form-inline w-100" action="/views/Chat.php?User=<?php echo $_GET["User"] ?>&ambito=<?php echo $_GET["ambito"] ?>" method="POST">
+            <input type="hidden" name="recieverId" value="<?php echo $_GET["User"] ?>">
+            <input type="hidden" name="ambito" value="<?php echo $_GET["ambito"] ?>">
+            <input type="hidden" name="action" value="newMessage">
             <div class="input-group p-5 w-100">
               <input type="text" class="form-control" name="cuerpo" placeholder="Teclea un mensaje">
               <div class="input-group-append">
-                  <button class="btn btn-outline-secondary">Button</button>
+                  <button type="submit" class="btn btn-outline-secondary">Enviar</button>
               </div>
             </div>
           </form>

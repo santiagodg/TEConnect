@@ -70,7 +70,8 @@
         Usuario.ID_User AS id,
         CONCAT(Usuario.PrimerNombre, ' ', Usuario.Apellido) AS name,
         Usuario.Foto AS photoFilename,
-        DetalleAmbito.Descripción AS description
+        DetalleAmbito.Descripción AS description,
+        Conexion.ID_Ambito AS ambito
       FROM Conexion
         LEFT JOIN Usuario
           ON Conexion.ID_User2 = Usuario.ID_User
@@ -105,7 +106,7 @@
         echo '<div class="media py-3">';
         echo '<img src="/upload/' . $connInfo["photoFilename"] . '" class="mr-3" style="display: block; max-width:64px; max-height:64px; width: auto; height: auto;">';
         echo '<div class="media-body">';
-        echo '<a href="/views/Chat.php?User=' . $connInfo["id"] . '"><h5 class="mt-0">' . $connInfo["name"] . '</h5></a>';
+        echo '<a href="/views/Chat.php?User=' . $connInfo["id"] . "&ambito=" . $connInfo["ambito"] . '"><h5 class="mt-0">' . $connInfo["name"] . '</h5></a>';
         echo $connInfo["description"];
         echo '</div>';
         echo '</div>';
