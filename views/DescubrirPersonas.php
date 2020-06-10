@@ -59,7 +59,6 @@
     {
       case "newConnection":
         createTEConnectConection($_SESSION['id'], $_POST["id_user2"], $_POST["id_ambito"]);
-        createTEConnectConection($_POST["id_user2"], $_SESSION['id'], $_POST["id_ambito"]); // symmetry
         header("Location: /views/DescubrirPersonas.php?ambito=" . $_POST["id_ambito"]);
         break;
 
@@ -92,11 +91,34 @@
     return $hasDetalleAmbito;
   }
 
+  function getAmbitoName($ambitoId)
+  {
+    $conn = startConnection();
+
+    $sql = "
+      SELECT Nombre
+      FROM Ambito
+      WHERE ID_Ambito = " . $ambitoId . ";
+    ";
+    $result = mysqli_query($conn, $sql);
+    $name = "";
+    if ($row = mysqli_fetch_assoc($result)) 
+    {
+      $name = $row["Nombre"];
+    }
+
+    stopConnection($conn);
+
+    return $name;
+  }
+
   function displayFormForDetalleAmbito()
   {
     // displays form to register self on ambito
 
-    echo '<h1 class="mb-5">Registro de Perfil Profesional</h1>';
+    $ambitoName = getAmbitoName($_GET["ambito"]);
+
+    echo '<h1 class="mb-5">Registro de Perfil ' . $ambitoName . '</h1>';
     echo '<form action="/views/DescubrirPersonas.php" method="post">';
     echo '<input type="hidden" name="action" value="createDetalleAmbito">';
     echo '<input type="hidden" name="ambito" value="' . $_GET["ambito"] . '">';
@@ -142,7 +164,73 @@
     return $output;
   }
 
-  function getDetalleAmbitoDesciptionOfUser($userId)
+  function getGustos($userId, $ambitoId)
+  {
+    $conn = startConnection();
+
+    $sql = "
+      SELECT Gusto
+      FROM DetalleAmbito_Gusto
+      WHERE ID_User = " . $userId . " AND
+      ID_Ambito = "  . $ambitoId . ";
+    ";
+    $result = mysqli_query($conn, $sql);
+    $gustos = array();
+    while ($row = mysqli_fetch_assoc($result)) 
+    {
+      $gustos[] = $row["Gusto"];
+    }
+
+    stopConnection($conn);
+
+    return $gustos;
+  }
+
+  function getIntereses($userId, $ambitoId)
+  {
+    $conn = startConnection();
+
+    $sql = "
+      SELECT Interes
+      FROM DetalleAmbito_Interes
+      WHERE ID_User = " . $userId . " AND
+      ID_Ambito = "  . $ambitoId . ";
+    ";
+    $result = mysqli_query($conn, $sql);
+    $intereses = array();
+    while ($row = mysqli_fetch_assoc($result)) 
+    {
+      $intereses[] = $row["Interes"];
+    }
+
+    stopConnection($conn);
+
+    return $intereses;
+  }
+
+  function getActividades($userId, $ambitoId)
+  {
+    $conn = startConnection();
+
+    $sql = "
+      SELECT Actividad
+      FROM DetalleAmbito_Actividad
+      WHERE ID_User = " . $userId . " AND
+      ID_Ambito = "  . $ambitoId . ";
+    ";
+    $result = mysqli_query($conn, $sql);
+    $actividades = array();
+    while ($row = mysqli_fetch_assoc($result)) 
+    {
+      $actividades[] = $row["Actividad"];
+    }
+
+    stopConnection($conn);
+
+    return $actividades;
+  }
+
+  function getDetalleAmbitoProfile($userId, $ambitoId)
   {
     // outputs associative array with keys "id", "name", "description",
     // and "photoFilename" of user
@@ -171,6 +259,14 @@
       $output["photoFilename"] = $row["foto"];
     }
 
+    $gustos = getGustos($userId, $ambitoId);
+    $intereses = getIntereses($userId, $ambitoId);
+    $actividades = getActividades($userId, $ambitoId);
+
+    $output["gustos"] = $gustos;
+    $output["intereses"] = $intereses;
+    $output["actividades"] = $actividades;
+
     stopConnection($conn);
 
     return $output;
@@ -186,14 +282,56 @@
     {
       $randomIndex = array_rand($displayableUserIdsArray);
       $randomUserId = $displayableUserIdsArray[$randomIndex];
-      $shownUserInfo = getDetalleAmbitoDesciptionOfUser($randomUserId);
+      $shownUserInfo = getDetalleAmbitoProfile($randomUserId, $_GET["ambito"]);
 
-      echo '<div class="card text-center">';
-      echo '<img src="/upload/' . $shownUserInfo["photoFilename"] . '" style="display: block; max-width:1108px; max-height:350px; width: auto; height: auto; margin-left: auto; margin-right: auto;">';
-      echo '<div class="card-body">';
-      echo '<h5 class="card-title">' . $shownUserInfo["name"] . '</h5>';
-      echo '<p class="card-text">' . $shownUserInfo["description"] . '</p>';
-      echo '<div class="row no-gutters justify-content-around">';
+      echo '<div class="row">';
+      echo '<div class="col text-center">';
+      echo '<img src="/upload/' . $shownUserInfo["photoFilename"] . '" style="max-width: 570px; max-height: 400px; width: auto; height: auto;">';
+      echo '</div>';
+      echo '<div class="col">';
+      echo '<h3 class="">' . $shownUserInfo["name"] . '</h3>';
+      echo '<p>' . $shownUserInfo["description"] . '</p>';
+
+      if (!empty($shownUserInfo["gustos"]))
+      {
+        echo '<h5 class="mt-4">Gustos</h5>';
+        echo '<p>';
+        $n = count($shownUserInfo["gustos"]);
+        for ($i = 0; $i < $n - 1; $i++)
+        {
+          echo $shownUserInfo["gustos"][$i] . ", ";
+        }
+        echo $shownUserInfo["gustos"][$n - 1];
+        echo '</p>';
+      }
+
+      if (!empty($shownUserInfo["intereses"]))
+      {
+        echo '<h5 class="mt-4">Intereses</h5>';
+        echo '<p>';
+        $n = count($shownUserInfo["intereses"]);
+        for ($i = 0; $i < $n - 1; $i++)
+        {
+          echo $shownUserInfo["intereses"][$i] . ", ";
+        }
+        echo $shownUserInfo["intereses"][$n - 1];
+        echo '</p>';
+      }
+
+      if (!empty($shownUserInfo["actividades"]))
+      {
+        echo '<h5 class="mt-4">Actividades</h5>';
+        echo '<p>';
+        $n = count($shownUserInfo["actividades"]);
+        for ($i = 0; $i < $n - 1; $i++)
+        {
+          echo $shownUserInfo["actividades"][$i] . ", ";
+        }
+        echo $shownUserInfo["actividades"][$n - 1];
+        echo '</p>';
+      }
+      
+      echo '<div class="row justify-content-around mt-5">';
       echo '<form action="/views/DescubrirPersonas.php" method="post">';
       echo '<input type="hidden" name="id_user2" value="' . $shownUserInfo["id"] . '">';
       echo '<input type="hidden" name="id_ambito" value="' . $_GET["ambito"] . '">';
@@ -201,7 +339,6 @@
       echo '<a href="/views/DescubrirPersonas.php?ambito=' . $_GET["ambito"] . '" class="btn btn-primary mx-5">Pasar</a>';
       echo '<button class="btn btn-primary mx-5">Conectar</button>';
       echo '</form>';
-      echo '</div>';
       echo '</div>';
       echo '</div>';
 
@@ -271,9 +408,18 @@
       </div>
     </nav>
 
-    <div class="container">
+    <div class="container my-5 border rounded bg-light shadow p-3">
       <div class="row py-5">
         <div class="col">
+        <!-- <div class="col-1">             BOTÓN VOLVER
+          <a href="#">
+            <svg class="bi bi-arrow-left text-dark" width="60" height="60" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M5.854 4.646a.5.5 0 0 1 0 .708L3.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
+              <path fill-rule="evenodd" d="M2.5 8a.5.5 0 0 1 .5-.5h10.5a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+            </svg>
+          </a>
+        </div> -->
+      
           <?php
             displayContent();
           ?>
