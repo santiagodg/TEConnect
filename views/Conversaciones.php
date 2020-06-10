@@ -35,6 +35,15 @@
     ";
     mysqli_query($conn, $sql);
 
+    $sql = "
+      DELETE FROM Conexion
+      WHERE
+        ID_User1 = " . $userId2 . " AND
+        ID_User2 = " . $userId1 . " AND
+        ID_Ambito = " . $ambitoId . ";
+    ";
+    mysqli_query($conn, $sql);
+
     stopMySQLConnection($conn);
   } 
 
