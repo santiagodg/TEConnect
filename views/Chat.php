@@ -224,7 +224,15 @@
             <a class="nav-link" href="/views/EscogerAmbito.php">Descubrir Personas</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="/views/Conversaciones.php">Conversaciones<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/views/Conversaciones.php">Conversaciones</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item mr-3">
+            <a class="nav-link" href="/views/Perfil.php">Perfil</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/views/Logout.php">Cerrar Sesión</a>
           </li>
         </ul>
       </div>

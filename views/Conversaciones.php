@@ -320,7 +320,7 @@
     <title>TEConnect | Conversaciones</title>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" style="z-index: 2;">
       <a class="navbar-brand" href="/index.php">TEConnect</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -328,14 +328,22 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
+          <li class="nav-item ">
             <a class="nav-link" href="/views/home.php">Home</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/views/EscogerAmbito.php">Descubrir Personas</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="/views/Conversaciones.php">Conversaciones<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/views/Conversaciones.php">Conversaciones</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item mr-3">
+            <a class="nav-link" href="/views/Perfil.php">Perfil</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/views/Logout.php">Cerrar Sesión</a>
           </li>
         </ul>
       </div>
