@@ -262,7 +262,7 @@
             echo '</div>';
 
             // display action buttons
-            echo '<a href="/views/PerfilDeOtro.php?user=' . $connInfo["id"] . '" class="btn btn-primary mr-5">Perfil</a>';
+            echo '<a href="/views/PerfilDeOtro.php?user=' . $connInfo["id"] . '&ambito=' . $connInfo["ambito"] . '" class="btn btn-primary mr-5">Perfil</a>';
             echo '<form method="POST" action="/views/Conversaciones.php" class="d-inline">';
             echo '<input type="hidden" name="action" value="deleteConnection">';
             echo '<input type="hidden" name="user2" value=' . $connInfo["id"] . '>';
