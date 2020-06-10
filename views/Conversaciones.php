@@ -22,18 +22,64 @@
     mysqli_close($conn);
   }
 
-  function numberOfConnectionsOfUser($userId)
+  function deleteConnection($userId1, $userId2, $ambitoId)
   {
     $conn = startMySQLConnection();
 
-    $sql = "SELECT COUNT(*) AS count FROM Conexion WHERE ID_User1 = " . $userId . ";";
-    $result = mysqli_query($conn, $sql);
-    if ($row = mysqli_fetch_assoc($result))
+    $sql = "
+      DELETE FROM Conexion
+      WHERE
+        ID_User1 = " . $userId1 . " AND
+        ID_User2 = " . $userId2 . " AND
+        ID_Ambito = " . $ambitoId . ";
+    ";
+    mysqli_query($conn, $sql);
+
+    stopMySQLConnection($conn);
+  } 
+
+  if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]))
+  {
+    switch ($_POST["action"])
     {
-      return $row["count"];
+      case "deleteConnection":
+        deleteConnection($_SESSION["id"], $_POST["user2"], $_POST["ambito"]);
+        break;
+    }
+  }
+
+  function mutualConnections($userId, $ambitoId)
+  {
+    $conn = startMySQLConnection();
+
+    $sql = "
+      SELECT
+        FechaCreada,
+        ID_User2 AS SelfId,
+        ID_User1 AS OtherUserId,
+        ID_Ambito
+      FROM Conexion
+      WHERE
+        ID_User2 = " . $userId . " AND
+        ID_Ambito = " . $ambitoId . " AND
+        ID_User1 IN (
+          SELECT ID_User2
+          FROM Conexion
+          WHERE
+            ID_User1 = " . $userId . " AND
+            ID_Ambito = " . $ambitoId . "
+        );
+    ";
+    $result = mysqli_query($conn, $sql);
+    $connections = array();
+    while ($row = mysqli_fetch_assoc($result))
+    {
+      $connections[] = $row;
     }
 
     stopMySQLConnection($conn);
+
+    return $connections;
   }
 
   function getConnectionIdsFromUser($userId)
@@ -94,30 +140,158 @@
     return $output;
   }
 
+  function getAmbitosRegisteredIn($userId)
+  {
+    $conn = startMySQLConnection();
+
+    $sql = "
+      SELECT *
+      FROM DetalleAmbito
+      WHERE ID_User = " . $userId . ";
+    ";
+    $result = mysqli_query($conn, $sql);
+    $ambitoIds = array();
+    while ($row = mysqli_fetch_assoc($result))
+    {
+      $ambitoIds[] = $row;
+    }
+
+    stopMySQLConnection($conn);
+
+    return $ambitoIds;
+  }
+
+  function lastMessage($connection)
+  {
+    $conn = startMySQLConnection();
+
+    $sql = "
+      SELECT
+        Usuario.PrimerNombre AS senderName,
+        Mensaje.Cuerpo AS body
+      FROM Mensaje
+      JOIN Usuario
+      ON Mensaje.ID_Sender = Usuario.ID_User
+      WHERE
+        Mensaje.ID_User1 = " . $connection["SelfId"] . " AND Mensaje.ID_User2 = " . $connection["OtherUserId"] . " OR
+        Mensaje.ID_User1 = " . $connection["OtherUserId"] . " AND Mensaje.ID_User2 = " . $connection["SelfId"] . "
+      ORDER BY HoraEnviado DESC
+      LIMIT 1;
+    ";
+    $result = mysqli_query($conn, $sql);
+    $lastMessage = array();
+    if ($row = mysqli_fetch_assoc($result))
+    {
+      $lastMessage = $row;
+    }
+
+    stopMySQLConnection($conn);
+
+    return $lastMessage;
+  }
+
+  function getAmbitoName($ambitoId)
+  {
+    $conn = startMySQLConnection();
+
+    $sql = "
+      SELECT Nombre
+      FROM Ambito
+      WHERE ID_Ambito = " . $ambitoId . ";
+    ";
+    $result = mysqli_query($conn, $sql);
+    $ambitoName = "";
+    if ($row = mysqli_fetch_assoc($result))
+    {
+      $ambitoName = $row["Nombre"];
+    }
+
+    stopMySQLConnection($conn);
+
+    return $ambitoName;
+  }
+
   function displayContent()
   {
-    if (numberOfConnectionsOfUser($_SESSION["id"]) > 0)
+    $ambitos = getAmbitosRegisteredIn($_SESSION["id"]);
+    if (count($ambitos) > 0)
     {
-      $connectionIds = getConnectionIdsFromUser($_SESSION["id"]);
-      foreach ($connectionIds as $connId)
-      {
-        $connInfo = getConversationInfo($connId);
+      // show connections in each ambito
+      echo '<div class="row">';
 
-        echo '<div class="media py-3">';
-        echo '<img src="/upload/' . $connInfo["photoFilename"] . '" class="mr-3" style="display: block; max-width:64px; max-height:64px; width: auto; height: auto;">';
-        echo '<div class="media-body">';
-        echo '<a href="/views/Chat.php?User=' . $connInfo["id"] . "&ambito=" . $connInfo["ambito"] . '"><h5 class="mt-0">' . $connInfo["name"] . '</h5></a>';
-        echo $connInfo["description"];
+      foreach ($ambitos as $ambito)
+      {
+        echo '<div class="col">';
+
+        $ambitoName = getAmbitoName($ambito["ID_Ambito"]);
+        echo '<h3>' . $ambitoName . '</h3>';
+
+        $mutualConnections = mutualConnections($_SESSION["id"], $ambito['ID_Ambito']);
+        if (count($mutualConnections) > 0)
+        {
+          foreach ($mutualConnections as $mutualConn)
+          {
+            // get other user info
+            $connId["user1_id"] = $mutualConn["SelfId"];
+            $connId["user2_id"] = $mutualConn["OtherUserId"];
+            $connId["ambito_id"] = $mutualConn["ID_Ambito"];
+            $connInfo = getConversationInfo($connId);
+
+            // display connection
+            echo '<div class="media py-3">';
+            echo '<img src="/upload/' . $connInfo["photoFilename"] . '" class="mr-3" style="display: block; max-width:64px; max-height:64px; width: auto; height: auto;">';
+            echo '<div class="media-body">';
+            echo '<a href="/views/Chat.php?User=' . $connInfo["id"] . "&ambito=" . $connInfo["ambito"] . '">';
+            echo '<h5 class="mt-0">' . $connInfo["name"] . '</h5>';
+            echo '</a>';
+
+            // check if connection has messages
+            $lastMessage = lastMessage($mutualConn);
+            if (!empty($lastMessage))
+            {
+              // show connection with last message preview
+              echo $lastMessage["senderName"] . ': ' . $lastMessage["body"];
+            }
+            else
+            {
+              // show connection with "start the conversation" message
+              echo '¡Han hecho match, comienza la conversación!';
+            }
+
+            echo '</div>';
+            echo '</div>';
+
+            // display action buttons
+            echo '<a href="/views/PerfilDeOtro.php?user=' . $connInfo["id"] . '&ambito=' . $connInfo["ambito"] . '" class="btn btn-primary mr-5">Perfil</a>';
+            echo '<form method="POST" action="/views/Conversaciones.php" class="d-inline">';
+            echo '<input type="hidden" name="action" value="deleteConnection">';
+            echo '<input type="hidden" name="user2" value=' . $connInfo["id"] . '>';
+            echo '<input type="hidden" name="ambito" value=' . $ambito["ID_Ambito"] . '>';
+            echo '<input type="submit" class="btn btn-danger" value="Eliminar">';
+            echo '</form>';
+
+            echo '<hr>';
+          }
+        }
+        else
+        {
+          // show message to register ambito on DescubrirPersonas
+          echo '<p class="mt-5">No tienes conexiones mutuas</p>';
+          echo '<p class="">Vaya a la sección de Descubrir Personas para seguir buscando gente.</p>';
+          echo '<div class="text-center"><a href="/views/EscogerAmbito.php">Ir a Descubrir Personas</a></div>';
+        }
+
         echo '</div>';
-        echo '</div>';
-        echo '<hr>';
       }
+
+      echo '</div>';
     }
     else
     {
-      echo '<h1 class="text-center mb-5">No se encontraron conexiones</p>';
-      echo '<p class="text-center">Vaya a la sección de Descubrir Personas para conectarte con otros.</p>';
-      echo '<div class="text-center"><a href="/views/DescubrirPersonas.php">Ir a Descubrir Personas</a></div>';
+      // show message to register ambito on DescubrirPersonas
+      echo '<h1 class="text-center mb-5">No estás registrado en ningún ámbito</p>';
+      echo '<p class="text-center">Vaya a la sección de Descubrir Personas para registrarte.</p>';
+      echo '<div class="text-center"><a href="/views/EscogerAmbito.php">Ir a Descubrir Personas</a></div>';
     }
   }
 ?>
@@ -158,15 +332,13 @@
       </div>
     </nav>
 
-    <div class="container-fluid">
+    <div class="container">
       <div class="row py-5">
-        <div class="col-3"></div>
         <div class="col">
           <?php
             displayContent();
           ?>
         </div>
-        <div class="col-3"></div>
       </div>
     </div>
     
