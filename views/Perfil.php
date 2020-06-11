@@ -65,74 +65,34 @@
         }
     }   
 
-    function getGustos($id_user)
+    function getAmbitosOfUser($id_user)
     {
-        $servername = "127.0.0.1";
-        $username = "root";
-        $password = "";
-        $database = "TEConnect";
-        $os = PHP_OS;
-
-        $conn = mysqli_connect($servername, $username, $password, $database);
-        if (!$conn)
-        {
-            die("Connection failed: " . mysqli_connect_error());
-        }
-
-        $sql = "SELECT Gusto FROM DetalleAmbito_Gusto WHERE ID_User=" . $id_user;
+      $servername = "127.0.0.1";
+      $username = "root";
+      $password = "";
+      $database = "TEConnect";
+      
+      $conn = mysqli_connect($servername, $username, $password, $database);
+      if (!$conn)
+      {
+          die("Connection failed: " . mysqli_connect_error());
+      }
+      
+      $sql = "SELECT * FROM DetalleAmbito D, Ambito A WHERE D.ID_Ambito = A.ID_Ambito AND D.ID_User=" . $id_user;
         $result = mysqli_query($conn, $sql);
-        while($row = mysqli_fetch_assoc($result))
+        if (mysqli_num_rows($result) == 0) 
         {
-            echo $row["Gusto"];
-            echo "<br>"; 
+          echo "No tienes ambitos en tu perfil, ve a descubrir personas para que registres algunos";
         }
-    }   
-
-    function getIntereses($id_user)
-    {
-        $servername = "127.0.0.1";
-        $username = "root";
-        $password = "";
-        $database = "TEConnect";
-        $os = PHP_OS;
-
-        $conn = mysqli_connect($servername, $username, $password, $database);
-        if (!$conn)
+        while ($row = mysqli_fetch_assoc($result))
         {
-            die("Connection failed: " . mysqli_connect_error());
+            echo $row["Nombre"];
+            echo "<br><a href='/views/EditarAmbito.php?id_ambito=".$row["ID_Ambito"]."&nombre_ambito=".$row["Nombre"]."'>Editar ambito</a><br><br>" ;   
         }
 
-        $sql = "SELECT Interes FROM DetalleAmbito_Interes WHERE ID_User=" . $id_user;
-        $result = mysqli_query($conn, $sql);
-        while($row = mysqli_fetch_assoc($result))
-        {
-            echo $row["Interes"];
-            echo "<br>"; 
-        }
     }
 
-    function getActividades($id_user)
-    {
-        $servername = "127.0.0.1";
-        $username = "root";
-        $password = "";
-        $database = "TEConnect";
-        $os = PHP_OS;
-
-        $conn = mysqli_connect($servername, $username, $password, $database);
-        if (!$conn)
-        {
-            die("Connection failed: " . mysqli_connect_error());
-        }
-
-        $sql = "SELECT Actividad FROM DetalleAmbito_Actividad WHERE ID_User=" . $id_user;
-        $result = mysqli_query($conn, $sql);
-        while($row = mysqli_fetch_assoc($result))
-        {
-            echo $row["Interes"];
-            echo "<br>"; 
-        }
-    }
+    
 ?>
 
 <!DOCTYPE html>
@@ -182,7 +142,7 @@
     <div class="container my-5 border rounded bg-light shadow p-3">
       <div class="row">
         <div class="col-1">
-          <a href="#">
+          <a href="home.php">
             <svg class="bi bi-arrow-left text-dark" width="60" height="60" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" d="M5.854 4.646a.5.5 0 0 1 0 .708L3.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
               <path fill-rule="evenodd" d="M2.5 8a.5.5 0 0 1 .5-.5h10.5a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
@@ -212,24 +172,11 @@
                 echo "<br>";
                 echo $lugarOrigen;
             ?>
-          </p>
-          <h5 class="mt-4">Gustos</h5>
-            <?php
-                getGustos($_SESSION["id"]);
+            <h4 class="mt-5">Ambitos disponibles</h3>
+            <?php    
+                getAmbitosOfUser($_SESSION["id"]);
             ?>
-          <h5 class="mt-4">Intereses</h5>
-          <p>
-            <?php
-                getIntereses($_SESSION["id"]);
-            ?>
-          </p>
-          <h5 class="mt-4">Actividades</h5>
-          <p>
-            <?php
-                getActividades($_SESSION["id"]);
-            ?>
-          </p>
-          <br><br>
+          <br>
           <a href="/views/EditarUsuario.php">Editar perfil</a>
         </div>
       </div>

@@ -1,4 +1,7 @@
 <?php
+  date_default_timezone_set('America/Monterrey');
+  session_start();
+
   function startConnection()
   {
     $servername = "127.0.0.1";
@@ -44,8 +47,7 @@
       }
       echo "<div class=\"card-body\">";
       echo "<h5 class=\"card-title\">" . $row["Nombre"] . "</h5>";
-      echo "<p class=\"card-text\">Some quick example text to build on the card title and make up the bulk of the card's content.</p>";
-      echo "<a href=\"/views/DescubrirPersonas.php?ambito=" . $row["ID_Ambito"] . "\" class=\"btn btn-primary\">Go somewhere</a>";
+      echo "<a href=\"/views/DescubrirPersonas.php?ambito=" . $row["ID_Ambito"] . "\" class=\"btn btn-primary\">Seleccionar</a>";
       echo "</div>";
       echo "</div>";
       echo "</div>";

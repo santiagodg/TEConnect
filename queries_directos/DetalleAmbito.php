@@ -66,6 +66,7 @@
 
             if (mysqli_query($conn, $sql)) {
                 echo "<p style=\"color:green\">El detalle de ámbito fue modificado</p>";
+                header("location: /views/Perfil.php");
             } else {
                 echo "<p style=\"color:red\">Error: " . $sql . "<br>" . mysqli_error($conn) . "</p>";
             }

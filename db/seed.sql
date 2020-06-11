@@ -21,20 +21,20 @@ VALUES
  ('Me gusta tomar café y patinar', 4, 2),
  ('Me gusta alguien culto para ir a museos y hablar de cine clásico', 5, 3);
 
-INSERT INTO Conexion
-VALUES (20200601, 1, 3, 3),
- (20000520, 2, 4, 2),
- (20200305, 2, 5, 3),
- (20200602, 1, 2, 1),
- (20200303, 4, 5, 2);
+-- INSERT INTO Conexion
+-- VALUES (20200601, 1, 3, 3),
+--  (20000520, 2, 4, 2),
+--  (20200305, 2, 5, 3),
+--  (20200602, 1, 2, 1),
+--  (20200303, 4, 5, 2);
 
--- simetría
-INSERT INTO Conexion
-VALUES (20200601, 3, 1, 3),
- (20000520, 4, 2, 2),
- (20200305, 5, 2, 3),
- (20200602, 2, 1, 1),
- (20200303, 5, 4, 2);
+-- -- simetría
+-- INSERT INTO Conexion
+-- VALUES (20200601, 3, 1, 3),
+--  (20000520, 4, 2, 2),
+--  (20200305, 5, 2, 3),
+--  (20200602, 2, 1, 1),
+--  (20200303, 5, 4, 2);
 
 INSERT INTO DetalleAmbito_Interes
 VALUES 
@@ -80,8 +80,8 @@ VALUES
  ('perseverancia', 2, 2),
  ('estándares', 2, 2);
 
-INSERT INTO Mensaje
-VALUES
- ("hey, cómo estás?", 20200603, 1, 1, 1, 3, 3),
- ("buenas tardes, cómo te encuentras?", 20200604, 2, 2, 1, 2, 1),
- ("Qué onda!", 20200605, 3, 5, 2, 5, 3);
+-- INSERT INTO Mensaje
+-- VALUES
+--  ("hey, cómo estás?", 20200603, 1, 1, 1, 3, 3),
+--  ("buenas tardes, cómo te encuentras?", 20200604, 2, 2, 1, 2, 1),
+--  ("Qué onda!", 20200605, 3, 5, 2, 5, 3);
