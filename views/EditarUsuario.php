@@ -213,11 +213,11 @@
         </p>
         <p>
             <label>Contraseña</label>
-            <input type="password" name="contrasena" form-control-file value="<?php echo $contrasena;?>">
+            <input type="password" name="contrasena" class="form-control" value="<?php echo $contrasena;?>">
         </p>
         <p>
             <label>Matrícula</label>
-            <input type="text" name="matricula" form-control-file value="<?php echo $matricula;?>">
+            <input type="text" name="matricula" class="form-control" value="<?php echo $matricula;?>">
         </p>
             <input type="text" name="action" value="modifyUser" style="display:none;">
             <input type="text" name="id_user" value="<?php echo $id_user;?>" style="display:none;">
