@@ -5,15 +5,15 @@
 >Se ha desarrollado como parte del proyecto final de la materia de Bases De Datos, semestre Febrero-Junio 2020 con los profesores Alejandro Limones Quirino y Juan Raúl Espaza Marínez del Tecnológico de Monterrey Campus Monterrey.
 
 
->**Nadia Corina García Orozco A01242428** - Líder de Equipo
->**Jesús Pablo Lopez Ibarra A00825870** - Secretario
->**Santiago Díaz Guevara A01252554** - Experto Técnico
->**Mariano Carlos Gerardo Shaar Gutierrez A00825287** - Experto Técnico
->**Sofía Pamela Recinos Dorst A01657055** - Supervisor
->**Juan Camilo Granados A01023421** - Supervisor
+**Nadia Corina García Orozco A01242428** - Líder de Equipo  
+**Jesús Pablo Lopez Ibarra A00825870** - Secretario  
+**Santiago Díaz Guevara A01252554** - Experto Técnico  
+**Mariano Carlos Gerardo Shaar Gutierrez A00825287** - Experto Técnico  
+**Sofía Pamela Recinos Dorst A01657055** - Supervisor  
+**Juan Camilo Granados A01023421** - Supervisor  
 
 
 
->##[Documentación Completa](https://docs.google.com/document/d/1d9MWjmxEOANKMFsg7aEcHIDbpM5ODm501P111M-Eqrs/edit?usp=sharing)
+[Documentación Completa](https://docs.google.com/document/d/1d9MWjmxEOANKMFsg7aEcHIDbpM5ODm501P111M-Eqrs/edit?usp=sharing)
 
->##[Manual de Usuario](https://docs.google.com/document/d/1x15VrgESY54umwz56qklSBPsEPiWOCtKGoBw_6_1RtA/edit?usp=sharing)
+[Manual de Usuario](https://docs.google.com/document/d/1x15VrgESY54umwz56qklSBPsEPiWOCtKGoBw_6_1RtA/edit?usp=sharing)
